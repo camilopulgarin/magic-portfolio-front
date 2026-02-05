@@ -1,0 +1,55 @@
+{
+  /* ===============================
+     INDENTACIÓN Y FORMATO BÁSICO
+     =============================== */
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  /* ===============================
+     PRETTIER (ESTILO DE CÓDIGO)
+     =============================== */
+  "prettier.singleQuote": true,
+  "prettier.semi": true,
+  "prettier.trailingComma": "es5",
+  "prettier.printWidth": 100,
+  "prettier.arrowParens": "always",
+
+  /* ===============================
+     ARCHIVOS Y LIMPIEZA
+     =============================== */
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  /* ===============================
+     JAVASCRIPT / TYPESCRIPT
+     =============================== */
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single",
+
+  /* ===============================
+     ESLINT (CONTROLADO)
+     =============================== */
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  /* ===============================
+     NEXT.JS / REACT
+     =============================== */
+  "reactSnippets.settings.preferTypeScript": true,
+
+  /* ===============================
+     TAILWIND / SHADCN
+     =============================== */
+  "tailwindCSS.classAttributes": ["class", "className", "cn"],
+
+  /* ===============================
+     IMPORTS (ORDEN Y LIMPIEZA)
+     =============================== */
+  "editor.codeActionsOnSaveTimeout": 750
+}
