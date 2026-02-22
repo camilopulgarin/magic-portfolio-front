@@ -5,6 +5,7 @@
     "bradlc.vscode-tailwindcss",
     "dsznajder.es7-react-js-snippets",
     "christian-kohler.path-intellisense",
-    "usernamehw.errorlens"
+    "usernamehw.errorlens",
+    "sst-dev.opencode"
   ]
 }

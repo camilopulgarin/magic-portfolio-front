@@ -1,5 +1,8 @@
-import "../styles/globals.css";
-import { Metadata } from "next";
+import { Inter } from "next/font/google";
+import type { Metadata } from "next";
+import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "MagicPortfolio",
@@ -13,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning >
+      <body className={inter.className} suppressHydrationWarning>
         {children}
       </body>
     </html>
