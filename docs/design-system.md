@@ -65,6 +65,21 @@ Todos los colores deben definirse como variables **HSL** en:
 
 ⚠️ **Accent no debe usarse en exceso.**
 
+### 3.3 Gradientes
+
+| Aplicación      | Descripción         | Composición                                                                | Uso                    |
+| --------------- | ------------------- | -------------------------------------------------------------------------- | ---------------------- |
+| Body Background | Gradiente principal | `linear-gradient(135deg, var(--primary), var(--secondary), var(--accent))` | Fondo general del body |
+
+**Nota:** El gradiente del body utiliza las variables de color definidas en la paleta core para mantener consistencia y facilitar futuras modificaciones. La dirección `135deg` crea un degradado diagonal de esquina a esquina.
+
+**Implementación en CSS:**
+
+````css
+body {
+  background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+}
+
 ---
 
 ## 4. Layout System
@@ -240,4 +255,4 @@ Cualquier implementación que viole este documento debe considerarse incorrecta.
 **Design System Version:** 1.0
 **Last Updated:** [Fecha de actualización manual]
 **Maintainer:** Frontend Architecture
-```
+````
