@@ -43,13 +43,44 @@ El agente debe:
 
 ---
 
+## 🚀 SKILLS DISPONIBLES
+
+El agente **DEBE** cargar y usar estas skills según el contexto de la tarea:
+
+### 1. interface-design
+**Ubicación:** `.agents/skills/interface-design/SKILL.md`
+**Uso:** Diseño de interfaces - dashboards, admin panels, apps, herramientas y productos interactivos.
+**NO usar para:** Landing pages, sitios de marketing, campañas.
+
+### 2. ui-ux-pro-max
+**Ubicación:** `.agents/skills/ui-ux-pro-max/SKILL.md`
+**Uso:** Inteligencia de diseño UI/UX - 50 estilos, 21 paletas, 50 combinaciones de fuentes, 9 stacks tecnológicos (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui).
+
+### 3. vercel-react-best-practices
+**Ubicación:** `.agents/skills/vercel-react-best-practices/SKILL.md`
+**Uso:** Optimización de rendimiento React y Next.js - reglas de renderizado, caché, bundle optimization, server components.
+
+### 4. next-best-practices
+**Ubicación:** `.agents/skills/next-best-practices/SKILL.md`
+**Uso:** Mejores prácticas de Next.js - file conventions, RSC boundaries, data patterns, async APIs, metadata, error handling, route handlers, image/font optimization.
+
+| Skill | Cuándo usarlo |
+|-------|---------------|
+| `interface-design` | Crear dashboards, paneles de admin, interfaces de herramientas |
+| `ui-ux-pro-max` | Cualquier tarea de diseño UI/UX, elección de colores, tipografía, accesibilidad |
+| `vercel-react-best-practices` | Escribir, revisar o optimizar código React/Next.js |
+| `next-best-practices` | Trabajar con Next.js App Router, Server Components, APIs |
+
+**El agente DEBE invocar `skill(name: "nombre-de-skill")` al inicio de cualquier tarea que coincida con los criterios anteriores.**
+
+---
+
 ## 🎨 DESIGN SYSTEM ENFORCEMENT (MANDATORY)
 
 El sistema de diseño oficial del proyecto está definido en:
 **`/docs/design-system.md`**
 
 Este documento es la **única fuente de verdad** para todas las decisiones visuales.
-Cualquier implementación que lo contradiga debe considerarse **inválida**.
 
 ---
 

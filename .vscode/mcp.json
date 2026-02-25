@@ -1,13 +1,10 @@
 {
-	"servers": {
-		"linear": {
-			"type": "stdio",
-			"command": "npx",
-			"args": [
-				"mcp-remote",
-				"https://mcp.linear.app/mcp"
-			]
-		}
-	},
-	"inputs": []
+  "servers": {
+    "linear": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["mcp-remote", "https://mcp.linear.app/mcp"]
+    }
+  },
+  "inputs": []
 }
