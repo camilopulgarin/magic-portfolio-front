@@ -1,5 +1,9 @@
 import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
 import { Hero } from '@/components/sections/Hero';
+import { Features } from '@/components/sections/Features';
+import { HowItWorks } from '@/components/sections/HowItWorks';
+import { Showcase } from '@/components/sections/Showcase';
 
 export default function Home() {
   return (
@@ -8,19 +12,12 @@ export default function Home() {
 
       <main>
         <Hero />
-
-        <section id="caracteristicas" className="py-20 container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-foreground">Características</h2>
-        </section>
-
-        <section id="precios" className="py-20 container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-foreground">Precios</h2>
-        </section>
-
-        <section id="explorar" className="py-20 container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-foreground">Explorar Portafolios</h2>
-        </section>
+        <Features />
+        <HowItWorks />
+        <Showcase />
       </main>
+
+      <Footer />
     </div>
   );
 }
