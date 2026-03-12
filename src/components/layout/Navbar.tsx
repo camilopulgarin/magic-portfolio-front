@@ -1,15 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { Menu, X, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import Link from 'next/link';
+import { Menu, X, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '../ThemeToggle';
 
 const navLinks = [
-  { href: "#inicio", label: "Inicio" },
-  { href: "#caracteristicas", label: "Características" },
-  { href: "#precios", label: "Precios" },
-  { href: "#explorar", label: "Explorar Portafolios" },
+  { href: '#inicio', label: 'Inicio' },
+  { href: '#caracteristicas', label: 'Características' },
+  { href: '#precios', label: 'Precios' },
+  { href: '#explorar', label: 'Explorar Portafolios' },
 ];
 
 export function Navbar() {
@@ -25,9 +26,7 @@ export function Navbar() {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
                 <Sparkles className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">
-                MagicPortfolio
-              </span>
+              <span className="text-xl font-bold text-foreground">MagicPortfolio</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -36,7 +35,7 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200"
+                  className="text-md font-medium text-muted-foreground hover:text-foreground hover:scale-105 transition-all duration-200"
                 >
                   {link.label}
                 </Link>
@@ -45,10 +44,11 @@ export function Navbar() {
 
             {/* Desktop CTA Buttons */}
             <div className="hidden md:flex items-center gap-3">
-              <Button variant="ghost" size="sm">
+              <ThemeToggle />
+              <Button variant="ghost" size="lg">
                 Iniciar Sesión
               </Button>
-              <Button size="sm" className="bg-primary hover:bg-primary/90">
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
                 Crear Portafolio
               </Button>
             </div>
@@ -57,13 +57,9 @@ export function Navbar() {
             <button
               className="md:hidden p-2 text-foreground"
               onClick={() => setIsOpen(!isOpen)}
-              aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
             >
-              {isOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
 
@@ -75,17 +71,18 @@ export function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200 py-2"
+                    className="text-md font-medium text-muted-foreground hover:text-foreground transition-colors duration-200 py-2"
                     onClick={() => setIsOpen(false)}
                   >
                     {link.label}
                   </Link>
                 ))}
                 <div className="flex flex-col gap-2 pt-4 border-t border-white/10">
-                  <Button variant="ghost" size="sm" className="w-full">
+                  <ThemeToggle />
+                  <Button variant="ghost" size="lg" className="w-full">
                     Iniciar Sesión
                   </Button>
-                  <Button size="sm" className="w-full bg-primary hover:bg-primary/90">
+                  <Button size="lg" className="w-full bg-primary hover:bg-primary/90">
                     Crear Portafolio
                   </Button>
                 </div>

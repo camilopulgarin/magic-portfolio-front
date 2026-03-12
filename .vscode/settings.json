@@ -52,10 +52,5 @@
      IMPORTS (ORDEN Y LIMPIEZA)
      =============================== */
   "editor.codeActionsOnSaveTimeout": 750,
-  "ipynb.pasteImagesAsAttachments.enabled": false,
-  "chat.mcp.serverSampling": {
-    "magicportfolio/.vscode/mcp.json: linear": {
-      "allowedModels": ["copilot/auto"]
-    }
-  }
+  "ipynb.pasteImagesAsAttachments.enabled": false
 }
