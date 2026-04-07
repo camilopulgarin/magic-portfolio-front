@@ -45,12 +45,16 @@ export function Navbar() {
             {/* Desktop CTA Buttons */}
             <div className="hidden md:flex items-center gap-3">
               <ThemeToggle />
-              <Button variant="ghost" size="lg">
-                Iniciar Sesión
-              </Button>
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
-                Crear Portafolio
-              </Button>
+              <Link href="/login">
+                <Button variant="ghost" size="lg">
+                  Iniciar Sesión
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button size="lg" className="bg-primary hover:bg-primary/90">
+                  Crear Portafolio
+                </Button>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -79,12 +83,16 @@ export function Navbar() {
                 ))}
                 <div className="flex flex-col gap-2 pt-4 border-t border-white/10">
                   <ThemeToggle />
-                  <Button variant="ghost" size="lg" className="w-full">
-                    Iniciar Sesión
-                  </Button>
-                  <Button size="lg" className="w-full bg-primary hover:bg-primary/90">
-                    Crear Portafolio
-                  </Button>
+                  <Link href="/login" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" size="lg" className="w-full">
+                      Iniciar Sesión
+                    </Button>
+                  </Link>
+                  <Link href="/register" onClick={() => setIsOpen(false)}>
+                    <Button size="lg" className="w-full bg-primary hover:bg-primary/90">
+                      Crear Portafolio
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
