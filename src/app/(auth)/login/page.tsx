@@ -1,15 +1,42 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    try {
+      await login(email, password);
+      router.push("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al iniciar sesión");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="w-full max-w-md px-4">
-      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
-        <div className="text-center mb-8">
+    <div className="w-full max-w-md px-4 sm:px-6">
+      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl">
+        <div className="text-center mb-6 sm:mb-8">
           <h1
-            className="font-manrope text-3xl font-bold text-foreground mb-2"
+            className="font-manrope text-2xl sm:text-3xl font-bold text-foreground mb-2"
             style={{ letterSpacing: "-0.02em" }}
           >
             Bienvenido de nuevo
@@ -19,7 +46,13 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="space-y-5">
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+            <p className="text-sm text-destructive">{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-foreground">
               Correo electrónico
@@ -28,6 +61,9 @@ export default function LoginPage() {
               id="email"
               type="email"
               placeholder="tu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
           </div>
@@ -48,15 +84,19 @@ export default function LoginPage() {
               id="password"
               type="password"
               placeholder="Ingresa tu contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full h-12 bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium rounded-xl hover:opacity-90 transition-opacity"
+            disabled={isLoading}
+            className="w-full h-12 bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            Iniciar Sesión
+            {isLoading ? "Iniciando..." : "Iniciar Sesión"}
           </Button>
         </form>
 
@@ -71,7 +111,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Button
             variant="outline"
             className="h-11 bg-white/5 border-white/10 text-foreground hover:bg-white/10 hover:text-foreground transition-all"
