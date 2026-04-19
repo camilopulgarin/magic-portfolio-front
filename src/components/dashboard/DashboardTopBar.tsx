@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { cn } from "@/lib/utils";
 
 function Search(props: React.SVGProps<SVGSVGElement>) {
@@ -62,6 +64,8 @@ interface TopBarProps {
 }
 
 export function DashboardTopBar({ className }: TopBarProps) {
+  const router = useRouter();
+  const { logout, user } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -86,6 +90,11 @@ export function DashboardTopBar({ className }: TopBarProps) {
     { id: 2, title: "New visitor", message: "Someone viewed your portfolio", time: "1 hour ago" },
     { id: 3, title: "Profile updated", message: "Profile changes saved", time: "Yesterday" },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+  };
 
   return (
     <header
@@ -151,8 +160,8 @@ export function DashboardTopBar({ className }: TopBarProps) {
           {userMenuOpen && (
             <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-card border border-border shadow-lg overflow-hidden z-50">
               <div className="p-3 border-b border-border">
-                <p className="text-sm font-medium text-foreground">John Doe</p>
-                <p className="text-xs text-muted-foreground">john@example.com</p>
+                <p className="text-sm font-medium text-foreground">{user?.fullName || "User"}</p>
+                <p className="text-xs text-muted-foreground">{user?.email || ""}</p>
               </div>
               <div className="p-1">
                 <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors">
@@ -163,7 +172,10 @@ export function DashboardTopBar({ className }: TopBarProps) {
                   <Settings className="w-4 h-4" />
                   Settings
                 </button>
-                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-muted transition-colors">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-muted transition-colors"
+                >
                   <LogOut className="w-4 h-4" />
                   Log out
                 </button>

@@ -269,6 +269,52 @@ No alterar estructura sin justificación arquitectónica.
 
 ---
 
+## 📡 SERVICIOS E INTEGRACIONES (Next.js)
+
+### Estándar para manejo de servicios externos
+
+**Ubicación:** `lib/services/` o directamente en `lib/`
+
+**El agente DEBE:**
+
+- Crear **funciones async** independientes en archivos de servicios
+- Usar **fetch nativo** directamente en Server Components (no API routes intermedias)
+- Manejar credenciales via **variables de entorno** (`process.env`)
+- Usar **cache de Next.js** con opciones de `fetch`:
+  - `cache: 'force-cache'` - cacheo estático
+  - `cache: 'no-store'` - sin cacheo (dinámico)
+  - `next: { revalidate: 10 }` - ISR con revalidación
+
+**Patrón válido:**
+```typescript
+// lib/services/api.ts
+export async function getData() {
+  const res = await fetch('https://api.example.com/data', {
+    headers: { authorization: process.env.API_KEY },
+    next: { revalidate: 60 }
+  })
+  return res.json()
+}
+```
+
+```tsx
+// app/page.tsx - Server Component
+import { getData } from '@/lib/services/api'
+
+export default async function Page() {
+  const data = await getData() // Llamada directa
+  return <div>{data}</div>
+}
+```
+
+**El agente NO DEBE:**
+
+- Crear API routes para llamar servicios externos que pueden llamarse directamente
+- Exponer claves API o secretos en el cliente
+- Duplicar lógica de fetching en múltiples componentes
+
+---
+
 ## 🔒 REGLA FINAL
 
 - La **consistencia del sistema de diseño** tiene prioridad sobre la creatividad visual

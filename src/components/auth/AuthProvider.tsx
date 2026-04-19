@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { authApi, UserResponse } from "@/lib/api/auth";
+import { success, error } from "@/hooks/use-toast";
 
 interface AuthContextType {
   user: UserResponse | null;
@@ -41,16 +42,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     const result = await authApi.login({ email, password });
     setUser(result.user);
+    success(`Bienvenido, ${result.user.fullName}!`);
   };
 
   const register = async (email: string, password: string, fullName: string, username: string) => {
     const result = await authApi.register({ email, password, fullName, username });
     setUser(result.user);
+    success(`Cuenta creada para ${result.user.fullName}!`);
   };
 
   const logout = async () => {
     await authApi.logout();
     setUser(null);
+    success("Sesión cerrada correctamente");
   };
 
   return (
