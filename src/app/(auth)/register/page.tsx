@@ -1,15 +1,56 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const { register } = useAuth();
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await register(email, password, fullName, username);
+      router.push("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al crear la cuenta");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="w-full max-w-md px-4">
-      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
-        <div className="text-center mb-8">
+    <div className="w-full max-w-md px-4 sm:px-6">
+      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl">
+        <div className="text-center mb-6 sm:mb-8">
           <h1
-            className="font-manrope text-3xl font-bold text-foreground mb-2"
+            className="font-manrope text-2xl sm:text-3xl font-bold text-foreground mb-2"
             style={{ letterSpacing: "-0.02em" }}
           >
             Únete a la élite
@@ -19,15 +60,39 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <form className="space-y-5">
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+            <p className="text-sm text-destructive">{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-foreground">
+            <Label htmlFor="fullName" className="text-foreground">
               Nombre completo
             </Label>
             <Input
-              id="name"
+              id="fullName"
               type="text"
               placeholder="Juan Pérez"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="username" className="text-foreground">
+              Nombre de usuario
+            </Label>
+            <Input
+              id="username"
+              type="text"
+              placeholder="juanperez"
+              value={username}
+              onChange={(e) => setUsername(e.target.value.replace(/\s/g, ""))}
+              required
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
           </div>
@@ -40,6 +105,9 @@ export default function RegisterPage() {
               id="email"
               type="email"
               placeholder="tu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
           </div>
@@ -51,7 +119,10 @@ export default function RegisterPage() {
             <Input
               id="password"
               type="password"
-              placeholder="Crea una contraseña"
+              placeholder="Mínimo 8 caracteres"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
           </div>
@@ -64,15 +135,19 @@ export default function RegisterPage() {
               id="confirmPassword"
               type="password"
               placeholder="Confirma tu contraseña"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full h-12 bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium rounded-xl hover:opacity-90 transition-opacity"
+            disabled={isLoading}
+            className="w-full h-12 bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            Crear cuenta
+            {isLoading ? "Creando cuenta..." : "Crear cuenta"}
           </Button>
         </form>
 
@@ -87,7 +162,7 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Button
             variant="outline"
             className="h-11 bg-white/5 border-white/10 text-foreground hover:bg-white/10 hover:text-foreground transition-all"
