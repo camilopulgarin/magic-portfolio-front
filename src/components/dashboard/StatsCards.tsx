@@ -97,10 +97,10 @@ interface StatsCardsProps {
 }
 
 const stats = [
-  { title: "Total Portfolios", value: 12, icon: "briefcase" as const, trend: { value: 8, isPositive: true } },
-  { title: "Total Views", value: "2.4K", icon: "eye" as const, trend: { value: 24, isPositive: true } },
-  { title: "Profile Completeness", value: "78%", icon: "userCheck" as const, trend: { value: 12, isPositive: true } },
-  { title: "Featured", value: 3, icon: "star" as const },
+  { title: "Total Portafolios", value: 12, icon: "briefcase" as const, trend: { value: 8, isPositive: true } },
+  { title: "Total Vistas", value: "2.4K", icon: "eye" as const, trend: { value: 24, isPositive: true } },
+  { title: "Perfil Completo", value: "78%", icon: "userCheck" as const, trend: { value: 12, isPositive: true } },
+  { title: "Destacados", value: 3, icon: "star" as const },
 ];
 
 export function StatsCards({ className }: StatsCardsProps) {

@@ -3,32 +3,41 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { error as toastError } from "@/hooks/use-toast";
+import { loginSchema, LoginFormData } from "@/lib/schemas/auth";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
-    setError("");
 
     try {
-      await login(email, password);
+      await login(data.email, data.password);
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al iniciar sesión");
-    } finally {
-      setIsLoading(false);
+      const message = err instanceof Error ? err.message : "Credenciales incorrectas";
+      toastError(message);
+      setTimeout(() => setIsLoading(false), 800);
+      return;
     }
+    setIsLoading(false);
   };
 
   return (
@@ -46,7 +55,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-foreground">
               Correo electrónico
@@ -55,11 +64,12 @@ export default function LoginPage() {
               id="email"
               type="email"
               placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              {...register("email")}
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
+            {errors.email && (
+              <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -78,18 +88,13 @@ export default function LoginPage() {
               id="password"
               type="password"
               placeholder="Ingresa tu contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+              {...register("password")}
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
+            {errors.password && (
+              <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>
+            )}
           </div>
-
-          {error && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
-              {error}
-            </div>
-          )}
 
           <Button
             type="submit"

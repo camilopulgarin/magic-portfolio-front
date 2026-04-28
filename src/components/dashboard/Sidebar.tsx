@@ -6,11 +6,11 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "My Portfolios", href: "/dashboard/portfolios", icon: Briefcase },
-  { name: "Templates", href: "/dashboard/templates", icon: LayoutTemplate },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
-  { name: "Profile", href: "/dashboard/profile", icon: User },
+  { name: "Panel", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Mis Portafolios", href: "/dashboard/portfolios", icon: Briefcase },
+  { name: "Plantillas", href: "/dashboard/templates", icon: LayoutTemplate },
+  { name: "Ajustes", href: "/dashboard/settings", icon: Settings },
+  { name: "Perfil", href: "/dashboard/profile", icon: User },
 ];
 
 function LayoutDashboard(props: React.SVGProps<SVGSVGElement>) {
@@ -97,7 +97,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
       <button
         onClick={() => setMobileOpen(true)}
         className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-card border border-border"
-        aria-label="Open menu"
+        aria-label="Abrir menú"
       >
         <Menu className="w-5 h-5 text-foreground" />
       </button>
@@ -127,7 +127,7 @@ export function DashboardSidebar({ className }: SidebarProps) {
           <button
             onClick={() => setMobileOpen(false)}
             className="lg:hidden p-1 rounded-md hover:bg-muted"
-            aria-label="Close menu"
+            aria-label="Cerrar menú"
           >
             <X className="w-5 h-5 text-foreground" />
           </button>

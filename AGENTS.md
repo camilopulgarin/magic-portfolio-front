@@ -107,7 +107,7 @@ Este documento es la **única fuente de verdad** para todas las decisiones visua
 
 - ❌ **NO** debe usar colores HEX directamente
 - ❌ **NO** debe usar colores default de Tailwind como `bg-blue-500`
-- ✅ **DEBE** usar exclusivamente variables CSS definidas en: `styles/globals.css`
+- ✅ **DEBE** usar exclusivamente variables CSS definidas en: `src/app/globals.css`
 
 **Ejemplos válidos:**
 
@@ -312,6 +312,45 @@ export default async function Page() {
 - Crear API routes para llamar servicios externos que pueden llamarse directamente
 - Exponer claves API o secretos en el cliente
 - Duplicar lógica de fetching en múltiples componentes
+
+---
+
+## 🔔 NOTIFICACIONES TOAST
+
+### Biblioteca
+- **Paquete:** `sonner` (componente ui en `src/components/ui/sonner.tsx`)
+- **Hook:** `src/hooks/use-toast.ts`
+
+### Uso obligatorio
+
+**El agente DEBE:**
+- Usar el hook `use-toast` para mostrar notificaciones
+- Importar desde `@/hooks/use-toast`
+
+**Funciones disponibles:**
+
+| Función | Uso |
+|---------|-----|
+| `toast(message, { type?, description? })` | Genérica |
+| `success(message)` | Éxito |
+| `error(message)` | Error |
+| `info(message)` | Información |
+| `warning(message)` | Advertencia |
+
+**Ejemplo válido:**
+```typescript
+import { success, error } from "@/hooks/use-toast"
+
+success("Portafolio guardado correctamente")
+error("Credenciales inválidas")
+```
+
+### Cuándo implementarla
+
+Se debe usar cuando:
+1. El usuario complete una acción exitosa (guardar, crear, actualizar)
+2. Haya errores de validación o autenticación
+3. Se requiera feedback asíncrono después de una operación
 
 ---
 
