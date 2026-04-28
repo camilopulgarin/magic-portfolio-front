@@ -6,6 +6,7 @@ type ToastType = "success" | "error" | "info" | "warning" | "default"
 
 interface ToastOptions {
   description?: string
+  duration?: number
 }
 
 const toastTypes: Record<ToastType, (message: string, opts?: ToastOptions) => void> = {

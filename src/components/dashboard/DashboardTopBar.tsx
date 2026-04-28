@@ -86,9 +86,9 @@ export function DashboardTopBar({ className }: TopBarProps) {
   }, []);
 
   const notifications = [
-    { id: 1, title: "Portfolio published", message: "Your portfolio is now live", time: "2 min ago" },
-    { id: 2, title: "New visitor", message: "Someone viewed your portfolio", time: "1 hour ago" },
-    { id: 3, title: "Profile updated", message: "Profile changes saved", time: "Yesterday" },
+    { id: 1, title: "Portafolio publicado", message: "Tu portafolio ya está en línea", time: "Hace 2 min" },
+    { id: 2, title: "Nuevo visitante", message: "Alguien visitó tu portafolio", time: "Hace 1 hora" },
+    { id: 3, title: "Perfil actualizado", message: "Cambios del perfil guardados", time: "Ayer" },
   ];
 
   const handleLogout = async () => {
@@ -108,7 +108,7 @@ export function DashboardTopBar({ className }: TopBarProps) {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search portfolios..."
+            placeholder="Buscar portafolios..."
             className="w-full pl-10 pr-4 py-2 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors"
           />
         </div>
@@ -119,7 +119,7 @@ export function DashboardTopBar({ className }: TopBarProps) {
           <button
             onClick={() => setNotificationsOpen(!notificationsOpen)}
             className="relative p-2 rounded-lg hover:bg-muted transition-colors"
-            aria-label="Notifications"
+            aria-label="Notificaciones"
           >
             <Bell className="w-5 h-5 text-muted-foreground" />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-accent" />
@@ -128,7 +128,7 @@ export function DashboardTopBar({ className }: TopBarProps) {
           {notificationsOpen && (
             <div className="absolute right-0 top-full mt-2 w-80 rounded-xl bg-card border border-border shadow-lg overflow-hidden z-50">
               <div className="p-3 border-b border-border">
-                <h3 className="font-semibold text-foreground">Notifications</h3>
+                <h3 className="font-semibold text-foreground">Notificaciones</h3>
               </div>
               <div className="max-h-80 overflow-y-auto">
                 {notifications.map((notification) => (
@@ -166,18 +166,18 @@ export function DashboardTopBar({ className }: TopBarProps) {
               <div className="p-1">
                 <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors">
                   <User className="w-4 h-4" />
-                  Profile
+                  Perfil
                 </button>
                 <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors">
                   <Settings className="w-4 h-4" />
-                  Settings
+                  Ajustes
                 </button>
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-muted transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
-                  Log out
+                  Cerrar sesión
                 </button>
               </div>
             </div>

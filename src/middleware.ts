@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getServerToken } from "@/lib/api/auth";
 
 const protectedRoutes = ["/dashboard"];
 const authRoutes = ["/login", "/register"];

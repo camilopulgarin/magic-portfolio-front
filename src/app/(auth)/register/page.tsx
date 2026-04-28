@@ -3,46 +3,41 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { error as toastError } from "@/hooks/use-toast";
+import { registerSchema, RegisterFormData } from "@/lib/schemas/auth";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register } = useAuth();
-  const [fullName, setFullName] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const { register: registerUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+  });
 
-    if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
-
-    if (password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres");
-      return;
-    }
-
+  const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
 
     try {
-      await register(email, password, fullName, username);
+      await registerUser(data.email, data.password, data.fullName, data.username);
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al crear la cuenta");
-    } finally {
-      setIsLoading(false);
+      const message = err instanceof Error ? err.message : "Error al crear la cuenta";
+      toastError(message);
+      setTimeout(() => setIsLoading(false), 800);
+      return;
     }
+    setIsLoading(false);
   };
 
   return (
@@ -60,13 +55,7 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        {error && (
-          <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-            <p className="text-sm text-destructive">{error}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="fullName" className="text-foreground">
               Nombre completo
@@ -75,11 +64,12 @@ export default function RegisterPage() {
               id="fullName"
               type="text"
               placeholder="Juan Pérez"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
+              {...register("fullName")}
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
+            {errors.fullName && (
+              <p className="text-xs text-red-400 mt-1">{errors.fullName.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -90,11 +80,12 @@ export default function RegisterPage() {
               id="username"
               type="text"
               placeholder="juanperez"
-              value={username}
-              onChange={(e) => setUsername(e.target.value.replace(/\s/g, ""))}
-              required
+              {...register("username")}
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
+            {errors.username && (
+              <p className="text-xs text-red-400 mt-1">{errors.username.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -105,11 +96,12 @@ export default function RegisterPage() {
               id="email"
               type="email"
               placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              {...register("email")}
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
+            {errors.email && (
+              <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -120,11 +112,12 @@ export default function RegisterPage() {
               id="password"
               type="password"
               placeholder="Mínimo 8 caracteres"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+              {...register("password")}
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
+            {errors.password && (
+              <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -135,11 +128,12 @@ export default function RegisterPage() {
               id="confirmPassword"
               type="password"
               placeholder="Confirma tu contraseña"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
+              {...register("confirmPassword")}
               className="bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary"
             />
+            {errors.confirmPassword && (
+              <p className="text-xs text-red-400 mt-1">{errors.confirmPassword.message}</p>
+            )}
           </div>
 
           <Button

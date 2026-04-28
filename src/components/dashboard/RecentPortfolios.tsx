@@ -60,10 +60,10 @@ interface Portfolio {
 }
 
 const portfolios: Portfolio[] = [
-  { id: "1", name: "My Portfolio", template: "Modern Dark", views: 1234, status: "published", lastEdited: "2 hours ago" },
-  { id: "2", name: "Creative CV", template: "Creative", views: 856, status: "published", lastEdited: "1 day ago" },
-  { id: "3", name: "Tech Resume", template: "Minimalist", views: 0, status: "draft", lastEdited: "3 days ago" },
-  { id: "4", name: "Design Portfolio", template: "Glassmorphism", views: 2341, status: "published", lastEdited: "1 week ago" },
+  { id: "1", name: "Mi Portafolio", template: "Modern Dark", views: 1234, status: "published", lastEdited: "Hace 2 horas" },
+  { id: "2", name: "CV Creativo", template: "Creative", views: 856, status: "published", lastEdited: "Hace 1 día" },
+  { id: "3", name: "Resume Tech", template: "Minimalist", views: 0, status: "draft", lastEdited: "Hace 3 días" },
+  { id: "4", name: "Portafolio Diseño", template: "Glassmorphism", views: 2341, status: "published", lastEdited: "Hace 1 semana" },
 ];
 
 interface RecentPortfoliosProps {
@@ -76,13 +76,13 @@ export function RecentPortfolios({ className }: RecentPortfoliosProps) {
   return (
     <div className={cn("rounded-xl bg-card border border-border overflow-hidden", className)}>
       <div className="flex items-center justify-between p-4 border-b border-border">
-        <h2 className="text-lg font-semibold text-foreground">Recent Portfolios</h2>
+        <h2 className="text-lg font-semibold text-foreground">Portafolios Recientes</h2>
         <Link
           href="/dashboard/portfolios/new"
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
         >
           <Plus className="w-4 h-4" />
-          Create New
+          Crear Nuevo
         </Link>
       </div>
 
@@ -90,12 +90,12 @@ export function RecentPortfolios({ className }: RecentPortfoliosProps) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-border bg-muted/50">
-              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Name</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Template</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Views</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Last Edited</th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Nombre</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Plantilla</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Vistas</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Estado</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Última Ed.</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -119,7 +119,7 @@ export function RecentPortfolios({ className }: RecentPortfoliosProps) {
                         : "bg-yellow-400/10 text-yellow-400"
                     )}
                   >
-                    {portfolio.status}
+                    {portfolio.status === "published" ? "Publicado" : "Borrador"}
                   </span>
                 </td>
                 <td className="px-4 py-4">
@@ -138,15 +138,15 @@ export function RecentPortfolios({ className }: RecentPortfoliosProps) {
                       <div className="absolute right-0 top-full mt-1 w-36 rounded-lg bg-card border border-border shadow-lg overflow-hidden z-10">
                         <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors">
                           <Edit className="w-4 h-4" />
-                          Edit
+                          Editar
                         </button>
                         <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors">
                           <Eye className="w-4 h-4" />
-                          Preview
+                          Ver
                         </button>
                         <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-muted transition-colors">
                           <Trash className="w-4 h-4" />
-                          Delete
+                          Eliminar
                         </button>
                       </div>
                     )}
