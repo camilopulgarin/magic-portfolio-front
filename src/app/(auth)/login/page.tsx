@@ -120,6 +120,10 @@ export default function LoginPage() {
           <Button
             variant="outline"
             className="h-11 bg-white/5 border-white/10 text-foreground hover:bg-white/10 hover:text-foreground transition-all"
+            onClick={() => {
+              const callbackUrl = window.location.origin + "/dashboard";
+              window.location.href = `/api/auth/google?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+            }}
           >
             <svg
               className="w-5 h-5 mr-2"
