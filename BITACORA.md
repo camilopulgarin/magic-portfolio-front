@@ -98,3 +98,56 @@ Conectar el botón de Google en la página de login con la autenticación OAuth 
 
 ## Estado actual
 El flujo está implementado pero puede requerir ajustes dependiendo de cómo el backend maneje el callback exacto. Si persisten errores, verificar en la consola del backend los logs de `/auth/google` y `/auth/google/callback`.
+
+---
+
+## Actualización: HTTP-only cookies y limpieza
+
+**Fecha:** 2026-05-13
+
+### Cambios realizados
+
+Se migro el almacenamiento de tokens de localStorage a cookies httpOnly para mayor seguridad.
+
+### Archivos modificados
+
+#### 1. `src/app/api/auth/google/route.ts`
+- Ahora usa `process.env.NEXT_PUBLIC_API_URL` para la URL del backend
+- Pasa el callbackUrl encodeado al backend
+
+#### 2. `src/app/api/auth/google/callback/route.ts`
+- Extrae tokens desde las cookies que envía el backend (no de query params)
+- Guarda los tokens en cookies httpOnly en el frontend
+- Implementa `parseAllCookies()` para parsear el header `set-cookie`
+
+#### 3. `src/app/api/auth/logout/route.ts`
+- Envia el refreshToken al backend para invalidar la sesión
+- Limpia las cookies del frontend
+
+#### 4. `src/app/(auth)/login/page.tsx` y `register/page.tsx`
+- Habilitados los botones de Google con `onClick` que llama a `/api/auth/google`
+
+### Problema resuelto: loop de redirect
+
+**Síntoma:** El callbackUrl se encodeaba múltiples veces causando un loop de redirección infinita.
+
+**Causa:** El proxy de Next.js causaba doble encoding del callbackUrl.
+
+**Solución:** Usar URLs directas al backend (`http://localhost:4000`) en lugar del proxy para evitar el problema de encoding.
+
+### Flujo final
+
+1. Usuario hace click en botón Google
+2. `/api/auth/google` redirige a `http://localhost:4000/api/auth/google?callbackUrl=...`
+3. Backend redirige a Google OAuth
+4. Google retorna al callback del backend
+5. Backend devuelve tokens en cookies httpOnly
+6. `/api/auth/google/callback` extrae tokens y crea cookies en el frontend
+7. Redirige al dashboard
+
+### Cookies utilizadas
+
+| Nombre | Tipo | Duración |
+|--------|------|----------|
+| `accessToken` | httpOnly, secure, sameSite=lax | 15 minutos |
+| `refreshToken` | httpOnly, secure, sameSite=lax | 7 días |
