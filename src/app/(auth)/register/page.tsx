@@ -160,6 +160,9 @@ export default function RegisterPage() {
           <Button
             variant="outline"
             className="h-11 bg-white/5 border-white/10 text-foreground hover:bg-white/10 hover:text-foreground transition-all"
+            onClick={() => {
+              window.location.href = "/api/auth/google?callbackUrl=/dashboard";
+            }}
           >
             <svg
               className="w-5 h-5 mr-2"
@@ -176,6 +179,7 @@ export default function RegisterPage() {
           <Button
             variant="outline"
             className="h-11 bg-white/5 border-white/10 text-foreground hover:bg-white/10 hover:text-foreground transition-all"
+            disabled
           >
             <svg
               className="w-5 h-5 mr-2"
