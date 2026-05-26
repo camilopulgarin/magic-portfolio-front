@@ -1,21 +1,31 @@
-"use client";
-
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+'use client';
+import NextImage from 'next/image';
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useAuth } from '@/components/auth/AuthProvider'; // ✨ NUEVO
+import { cn } from '@/lib/utils';
 
 const navigation = [
-  { name: "Panel", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Mis Portafolios", href: "/dashboard/portfolios", icon: Briefcase },
-  { name: "Plantillas", href: "/dashboard/templates", icon: LayoutTemplate },
-  { name: "Ajustes", href: "/dashboard/settings", icon: Settings },
-  { name: "Perfil", href: "/dashboard/profile", icon: User },
+  { name: 'Panel', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Mis Portafolios', href: '/dashboard/portfolios', icon: Briefcase },
+  { name: 'Plantillas', href: '/dashboard/templates', icon: LayoutTemplate },
+  { name: 'Ajustes', href: '/dashboard/settings', icon: Settings },
+  { name: 'Perfil', href: '/dashboard/profile', icon: User },
 ];
 
 function LayoutDashboard(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect width="7" height="9" x="3" y="3" rx="1" />
       <rect width="7" height="5" x="14" y="3" rx="1" />
       <rect width="7" height="9" x="14" y="12" rx="1" />
@@ -26,7 +36,16 @@ function LayoutDashboard(props: React.SVGProps<SVGSVGElement>) {
 
 function Briefcase(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
       <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
     </svg>
@@ -35,7 +54,16 @@ function Briefcase(props: React.SVGProps<SVGSVGElement>) {
 
 function LayoutTemplate(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
       <path d="M3 9h18" />
       <path d="M9 21V9" />
@@ -45,7 +73,16 @@ function LayoutTemplate(props: React.SVGProps<SVGSVGElement>) {
 
 function Settings(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
       <circle cx="12" cy="12" r="3" />
     </svg>
@@ -54,7 +91,16 @@ function Settings(props: React.SVGProps<SVGSVGElement>) {
 
 function User(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="12" cy="8" r="5" />
       <path d="M20 21a8 8 0 0 0-16 0" />
     </svg>
@@ -63,7 +109,16 @@ function User(props: React.SVGProps<SVGSVGElement>) {
 
 function Menu(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="4" x2="20" y1="12" y2="12" />
       <line x1="4" x2="20" y1="6" y2="6" />
       <line x1="4" x2="20" y1="18" y2="18" />
@@ -73,7 +128,16 @@ function Menu(props: React.SVGProps<SVGSVGElement>) {
 
 function X(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M18 6 6 18" />
       <path d="M6 6l12 12" />
     </svg>
@@ -87,6 +151,7 @@ interface SidebarProps {
 export function DashboardSidebar({ className }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user } = useAuth(); // ✨ NUEVO
 
   const handleLinkClick = () => {
     setMobileOpen(false);
@@ -111,9 +176,9 @@ export function DashboardSidebar({ className }: SidebarProps) {
 
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full bg-card border-r border-border transition-transform duration-300",
-          "w-60 flex flex-col",
-          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+          'fixed top-0 left-0 z-50 h-full bg-card border-r border-border transition-transform duration-300',
+          'w-60 flex flex-col',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
           className
         )}
       >
@@ -142,13 +207,15 @@ export function DashboardSidebar({ className }: SidebarProps) {
                 href={item.href}
                 onClick={handleLinkClick}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 )}
               >
-                <item.icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-muted-foreground")} />
+                <item.icon
+                  className={cn('w-5 h-5', isActive ? 'text-primary' : 'text-muted-foreground')}
+                />
                 {item.name}
               </Link>
             );
@@ -160,12 +227,26 @@ export function DashboardSidebar({ className }: SidebarProps) {
             href="/dashboard/profile"
             className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors"
           >
-            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-              <span className="text-secondary-foreground text-xs font-medium">JD</span>
+            {/* ✨ NUEVO: imagen de perfil, si no hay muestra ícono User */}
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center overflow-hidden flex-shrink-0">
+              {user?.avatarUrl ? (
+                <NextImage
+                  src={user.avatarUrl}
+                  alt={user.fullName}
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-4 h-4 text-secondary-foreground" />
+              )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">John Doe</p>
-              <p className="text-xs text-muted-foreground truncate">john@example.com</p>
+              {/* ✨ NUEVO: datos dinámicos */}
+              <p className="text-sm font-medium text-foreground truncate">
+                {user?.fullName || 'Usuario'}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email || ''}</p>
             </div>
           </Link>
         </div>

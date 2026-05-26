@@ -1,17 +1,17 @@
-import { api, clearTokens, getTokens, setTokens } from "./client";
-import type { AuthResponse, LoginDto, RegisterDto, UserResponse } from "./types";
+import { api, clearTokens, getTokens, setTokens } from './client';
+import type { AuthResponse, LoginDto, RegisterDto, UserResponse } from './types';
 
 export const authApi = {
   async register(data: RegisterDto): Promise<AuthResponse> {
     clearTokens();
-    const { data: response } = await api.post<AuthResponse>("/auth/register", data);
+    const { data: response } = await api.post<AuthResponse>('/auth/register', data);
     setTokens({ accessToken: response.accessToken, refreshToken: response.refreshToken });
     return response;
   },
 
   async login(data: LoginDto): Promise<AuthResponse> {
     clearTokens();
-    const { data: response } = await api.post<AuthResponse>("/auth/login", data);
+    const { data: response } = await api.post<AuthResponse>('/auth/login', data);
     setTokens({ accessToken: response.accessToken, refreshToken: response.refreshToken });
     return response;
   },
@@ -19,7 +19,10 @@ export const authApi = {
   async logout(): Promise<void> {
     const tokens = getTokens();
     try {
-      await api.post("/auth/logout", { refreshToken: tokens?.refreshToken });
+      await fetch('/api/auth/logout', {
+        // ← tu route handler de Next.js
+        method: 'POST',
+      });
     } catch {
     } finally {
       clearTokens();
@@ -27,12 +30,12 @@ export const authApi = {
   },
 
   async getMe(): Promise<UserResponse> {
-    const { data } = await api.get<UserResponse>("/auth/me");
+    const { data } = await api.get<UserResponse>('/auth/me');
     return data;
   },
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
-    await api.patch("/auth/change-password", {
+    await api.patch('/auth/change-password', {
       currentPassword,
       newPassword,
     });

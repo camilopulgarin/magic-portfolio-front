@@ -1,13 +1,22 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { cn } from "@/lib/utils";
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { cn } from '@/lib/utils';
 
 function Search(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.3-4.3" />
     </svg>
@@ -16,7 +25,16 @@ function Search(props: React.SVGProps<SVGSVGElement>) {
 
 function Bell(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
       <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
     </svg>
@@ -25,7 +43,16 @@ function Bell(props: React.SVGProps<SVGSVGElement>) {
 
 function ChevronDown(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="m6 9 6 6 6-6" />
     </svg>
   );
@@ -33,7 +60,16 @@ function ChevronDown(props: React.SVGProps<SVGSVGElement>) {
 
 function LogOut(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
       <polyline points="16 17 21 12 16 7" />
       <line x1="21" x2="9" y1="12" y2="12" />
@@ -43,7 +79,16 @@ function LogOut(props: React.SVGProps<SVGSVGElement>) {
 
 function User(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="12" cy="8" r="5" />
       <path d="M20 21a8 8 0 0 0-16 0" />
     </svg>
@@ -52,7 +97,16 @@ function User(props: React.SVGProps<SVGSVGElement>) {
 
 function Settings(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
       <circle cx="12" cy="12" r="3" />
     </svg>
@@ -62,6 +116,16 @@ function Settings(props: React.SVGProps<SVGSVGElement>) {
 interface TopBarProps {
   className?: string;
 }
+
+const getInitials = (fullName?: string | null): string => {
+  if (!fullName) return '?';
+  return fullName
+    .split(' ')
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+};
 
 export function DashboardTopBar({ className }: TopBarProps) {
   const router = useRouter();
@@ -81,25 +145,35 @@ export function DashboardTopBar({ className }: TopBarProps) {
         setUserMenuOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const notifications = [
-    { id: 1, title: "Portafolio publicado", message: "Tu portafolio ya está en línea", time: "Hace 2 min" },
-    { id: 2, title: "Nuevo visitante", message: "Alguien visitó tu portafolio", time: "Hace 1 hora" },
-    { id: 3, title: "Perfil actualizado", message: "Cambios del perfil guardados", time: "Ayer" },
+    {
+      id: 1,
+      title: 'Portafolio publicado',
+      message: 'Tu portafolio ya está en línea',
+      time: 'Hace 2 min',
+    },
+    {
+      id: 2,
+      title: 'Nuevo visitante',
+      message: 'Alguien visitó tu portafolio',
+      time: 'Hace 1 hora',
+    },
+    { id: 3, title: 'Perfil actualizado', message: 'Cambios del perfil guardados', time: 'Ayer' },
   ];
 
   const handleLogout = async () => {
     await logout();
-    router.push("/login");
+    router.push('/login');
   };
 
   return (
     <header
       className={cn(
-        "flex items-center justify-between gap-4 px-6 py-4 border-b border-border bg-card",
+        'flex items-center justify-between gap-4 px-6 py-4 border-b border-border bg-card',
         className
       )}
     >
@@ -114,7 +188,7 @@ export function DashboardTopBar({ className }: TopBarProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 ml-auto">
         <div className="relative" ref={notificationRef}>
           <button
             onClick={() => setNotificationsOpen(!notificationsOpen)}
@@ -152,7 +226,9 @@ export function DashboardTopBar({ className }: TopBarProps) {
             className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted transition-colors"
           >
             <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-              <span className="text-secondary-foreground text-xs font-medium">JD</span>
+              <span className="text-secondary-foreground text-xs font-medium">
+                {getInitials(user?.fullName)}
+              </span>
             </div>
             <ChevronDown className="hidden lg:block w-4 h-4 text-muted-foreground" />
           </button>
@@ -160,8 +236,8 @@ export function DashboardTopBar({ className }: TopBarProps) {
           {userMenuOpen && (
             <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-card border border-border shadow-lg overflow-hidden z-50">
               <div className="p-3 border-b border-border">
-                <p className="text-sm font-medium text-foreground">{user?.fullName || "User"}</p>
-                <p className="text-xs text-muted-foreground">{user?.email || ""}</p>
+                <p className="text-sm font-medium text-foreground">{user?.fullName || 'User'}</p>
+                <p className="text-xs text-muted-foreground">{user?.email || ''}</p>
               </div>
               <div className="p-1">
                 <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted transition-colors">

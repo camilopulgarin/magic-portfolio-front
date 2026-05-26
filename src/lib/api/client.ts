@@ -1,6 +1,5 @@
-import axios, { AxiosError, type AxiosResponse, InternalAxiosRequestConfig } from "axios";
-
-const API_URL = "/api";
+import axios, { AxiosError, type AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { CLIENT_API_URL } from './config';
 
 export interface Tokens {
   accessToken: string;
@@ -31,33 +30,33 @@ const processQueue = (error: unknown | null, token: string | null = null) => {
 };
 
 const getTokens = (): Tokens | null => {
-  if (typeof window === "undefined") return null;
-  const accessToken = localStorage.getItem("accessToken");
-  const refreshToken = localStorage.getItem("refreshToken");
+  if (typeof window === 'undefined') return null;
+  const accessToken = localStorage.getItem('accessToken');
+  const refreshToken = localStorage.getItem('refreshToken');
   if (!accessToken || !refreshToken) return null;
   return { accessToken, refreshToken };
 };
 
 const setTokens = (tokens: Tokens): void => {
-  if (typeof window === "undefined") return;
-  localStorage.setItem("accessToken", tokens.accessToken);
-  localStorage.setItem("refreshToken", tokens.refreshToken);
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('accessToken', tokens.accessToken);
+  localStorage.setItem('refreshToken', tokens.refreshToken);
   document.cookie = `accessToken=${tokens.accessToken}; path=/; max-age=${15 * 60}; SameSite=Lax`;
   document.cookie = `refreshToken=${tokens.refreshToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
 };
 
 const clearTokens = (): void => {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  document.cookie = "accessToken=; path=/; max-age=0; SameSite=Lax";
-  document.cookie = "refreshToken=; path=/; max-age=0; SameSite=Lax";
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  document.cookie = 'accessToken=; path=/; max-age=0; SameSite=Lax';
+  document.cookie = 'refreshToken=; path=/; max-age=0; SameSite=Lax';
 };
 
 export const api = axios.create({
-  baseURL: API_URL,
+  baseURL: `${CLIENT_API_URL}`,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -100,14 +99,14 @@ api.interceptors.response.use(
       if (!tokens?.refreshToken) {
         isRefreshing = false;
         clearTokens();
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
         }
         return Promise.reject(error);
       }
 
       try {
-        const { data } = await api.post<Tokens>("/auth/refresh", {
+        const { data } = await api.post<Tokens>('/auth/refresh', {
           refreshToken: tokens.refreshToken,
         });
 
@@ -120,8 +119,8 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         clearTokens();
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
         }
         return Promise.reject(refreshError);
       } finally {

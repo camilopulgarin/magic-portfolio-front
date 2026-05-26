@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { API_URL } from '@/lib/api/config';
 
 function isValidCallbackUrl(url: string, baseUrl: string): boolean {
   try {
@@ -11,15 +12,15 @@ function isValidCallbackUrl(url: string, baseUrl: string): boolean {
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const code = searchParams.get("code");
-  const error = searchParams.get("error");
-  const callbackUrlParam = searchParams.get("callbackUrl");
+  const code = searchParams.get('code');
+  const error = searchParams.get('error');
+  const callbackUrlParam = searchParams.get('callbackUrl');
 
-  let callbackUrl = callbackUrlParam || "/dashboard";
+  let callbackUrl = callbackUrlParam || '/dashboard';
 
   const baseUrl = request.nextUrl.origin;
   if (!isValidCallbackUrl(callbackUrl, baseUrl)) {
-    callbackUrl = "/dashboard";
+    callbackUrl = '/dashboard';
   }
 
   if (error) {
@@ -27,71 +28,71 @@ export async function GET(request: NextRequest) {
   }
 
   if (!code) {
-    return NextResponse.redirect(new URL("/login?error=no_code", request.url));
+    return NextResponse.redirect(new URL('/login?error=no_code', request.url));
   }
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const apiUrl = API_URL;
 
   try {
     const backendResponse = await fetch(
       `${apiUrl}/api/auth/google/callback?code=${encodeURIComponent(code)}`,
       {
-        method: "GET",
-        credentials: "include",
-        redirect: "manual",
+        method: 'GET',
+        credentials: 'include',
+        redirect: 'manual',
         headers: {
-          Cookie: request.headers.get("cookie") || "",
+          Cookie: request.headers.get('cookie') || '',
         },
       }
     );
 
-    const setCookie = backendResponse.headers.get("set-cookie");
-    
+    const setCookie = backendResponse.headers.get('set-cookie');
+
     if (setCookie) {
       const tokens = parseAllCookies(setCookie);
-      
+
       if (tokens.accessToken && tokens.refreshToken) {
         const response = NextResponse.redirect(new URL(callbackUrl, request.url));
 
-        response.cookies.set("accessToken", tokens.accessToken, {
+        response.cookies.set('accessToken', tokens.accessToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
           maxAge: 15 * 60,
-          path: "/",
+          path: '/',
         });
-        response.cookies.set("refreshToken", tokens.refreshToken, {
+        response.cookies.set('refreshToken', tokens.refreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
           maxAge: 7 * 24 * 60 * 60,
-          path: "/",
+          path: '/',
         });
 
         return response;
       }
     }
 
-    return NextResponse.redirect(new URL("/login?error=auth_failed", request.url));
+    return NextResponse.redirect(new URL('/login?error=auth_failed', request.url));
   } catch {
-    return NextResponse.redirect(new URL("/login?error=auth_failed", request.url));
+    return NextResponse.redirect(new URL('/login?error=auth_failed', request.url));
   }
 }
 
 function parseAllCookies(setCookie: string): { accessToken?: string; refreshToken?: string } {
   const result: { accessToken?: string; refreshToken?: string } = {};
-  
-  const cookies = setCookie.split(",").map(c => c.trim());
-  
+
+  const cookies = setCookie.split(',').map((c) => c.trim());
+
   for (const cookie of cookies) {
-    if (cookie.startsWith("access_token=")) {
+    if (cookie.startsWith('access_token=')) {
       const match = cookie.match(/access_token=([^;]+)/);
       if (match) result.accessToken = match[1];
-    } else if (cookie.startsWith("refresh_token=")) {
+    } else if (cookie.startsWith('refresh_token=')) {
       const match = cookie.match(/refresh_token=([^;]+)/);
       if (match) result.refreshToken = match[1];
     }
   }
-  
+
   return result;
 }

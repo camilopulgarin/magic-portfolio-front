@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { authApi, UserResponse } from "@/lib/api/auth";
-import { success, error } from "@/hooks/use-toast";
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { authApi, UserResponse } from '@/lib/api/auth';
+import { setTokens } from '@/lib/api/client';
+import { success, error } from '@/hooks/use-toast';
 
 interface AuthContextType {
   user: UserResponse | null;
@@ -21,16 +22,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const initAuth = async () => {
-      if (!authApi.isAuthenticated()) {
-        setIsLoading(false);
+      // 1. Intenta con localStorage (login normal)
+      if (authApi.isAuthenticated()) {
+        try {
+          const userData = await authApi.getMe();
+          setUser(userData);
+        } catch {
+          authApi.logout();
+        } finally {
+          setIsLoading(false);
+        }
         return;
       }
 
+      // ✨ NUEVO: 2. Intenta con cookies httpOnly (login con Google)
       try {
-        const userData = await authApi.getMe();
-        setUser(userData);
+        const res = await fetch('/api/auth/tokens');
+        if (res.ok) {
+          const tokens = await res.json();
+          setTokens(tokens); // sincroniza cookies → localStorage
+          const userData = await authApi.getMe();
+          setUser(userData);
+        }
       } catch {
-        authApi.logout();
       } finally {
         setIsLoading(false);
       }
@@ -54,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     await authApi.logout();
     setUser(null);
-    success("Sesión cerrada correctamente");
+    success('Sesión cerrada correctamente');
   };
 
   return (
@@ -76,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }
