@@ -1,8 +1,8 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authApi, UserResponse } from '@/lib/api/auth';
-import { setTokens } from '@/lib/api/client';
+import { authApi } from '@/lib/api/auth';
+import type { UserResponse } from '@/lib/api/types';
 import { success, error } from '@/hooks/use-toast';
 
 interface AuthContextType {
@@ -22,29 +22,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const initAuth = async () => {
-      // 1. Intenta con localStorage (login normal)
-      if (authApi.isAuthenticated()) {
-        try {
-          const userData = await authApi.getMe();
-          setUser(userData);
-        } catch {
-          authApi.logout();
-        } finally {
-          setIsLoading(false);
-        }
-        return;
-      }
-
-      // ✨ NUEVO: 2. Intenta con cookies httpOnly (login con Google)
       try {
-        const res = await fetch('/api/auth/tokens');
-        if (res.ok) {
-          const tokens = await res.json();
-          setTokens(tokens); // sincroniza cookies → localStorage
-          const userData = await authApi.getMe();
-          setUser(userData);
-        }
-      } catch {
+        const userData = await authApi.getMe();
+        setUser(userData);
+      } catch (error) {
+        // Un 401 Unauthorized significa que no hay una sesión válida.
+        // Esto es esperado para usuarios anónimos o si las cookies no están presentes/son inválidas.
+        // Simplemente establecemos el usuario como null.
+        setUser(null);
       } finally {
         setIsLoading(false);
       }

@@ -1,32 +1,29 @@
-import { api, clearTokens, getTokens, setTokens } from './client';
+import { api } from './client';
 import type { AuthResponse, LoginDto, RegisterDto, UserResponse } from './types';
 
 export const authApi = {
   async register(data: RegisterDto): Promise<AuthResponse> {
-    clearTokens();
+    // El backend gestiona completamente la emisión de cookies httpOnly en su respuesta.
     const { data: response } = await api.post<AuthResponse>('/auth/register', data);
-    setTokens({ accessToken: response.accessToken, refreshToken: response.refreshToken });
     return response;
   },
 
   async login(data: LoginDto): Promise<AuthResponse> {
-    clearTokens();
+    // El backend gestiona completamente la emisión de cookies httpOnly en su respuesta.
     const { data: response } = await api.post<AuthResponse>('/auth/login', data);
-    setTokens({ accessToken: response.accessToken, refreshToken: response.refreshToken });
     return response;
   },
 
   async logout(): Promise<void> {
-    const tokens = getTokens();
     try {
-      await fetch('/api/auth/logout', {
-        // ← tu route handler de Next.js
-        method: 'POST',
-      });
-    } catch {
-    } finally {
-      clearTokens();
+      // Llama al endpoint de logout del backend.
+      // El backend invalidará la sesión y limpiará las cookies httpOnly.
+      await api.post('/auth/logout'); // Asumiendo que el backend tiene este endpoint
+    } catch (err) {
+      console.error("Error al cerrar sesión en el backend:", err);
     }
+    // No hay lógica de limpieza de tokens del lado del cliente aquí.
+    // AuthProvider se encargará de limpiar su estado local `user`.
   },
 
   async getMe(): Promise<UserResponse> {
@@ -40,14 +37,4 @@ export const authApi = {
       newPassword,
     });
   },
-
-  isAuthenticated(): boolean {
-    return !!getTokens();
-  },
 };
-
-export function getServerToken(cookies: string | null): string | undefined {
-  if (!cookies) return undefined;
-  const match = cookies.match(/accessToken=([^;]+)/);
-  return match?.[1];
-}

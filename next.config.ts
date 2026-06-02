@@ -15,10 +15,6 @@ const nextConfig: NextConfig = {
         source: '/api/:path*',
         destination: 'http://localhost:4000/api/:path*',
       },
-      {
-        source: '/auth/:path*',
-        destination: 'http://localhost:4000/api/auth/:path*',
-      },
     ];
   },
 };
