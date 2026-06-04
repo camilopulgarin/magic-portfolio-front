@@ -1,7 +1,7 @@
 # Documentación de Cambios: Refactor de Autenticación y Migración a Fetch Nativo
 
-> **Fecha:** Junio 2026  
-> **Versión:** 1.0  
+> **Fecha:** Junio 2026
+> **Versión:** 1.0
 > **Tipo:** Refactor Arquitectónico + Nueva Funcionalidad
 
 Este documento describe los cambios implementados para integrar **Google OAuth** y migrar la capa HTTP de **Axios** a **`fetch` nativo** isomorfo.
@@ -29,14 +29,14 @@ Este documento describe los cambios implementados para integrar **Google OAuth**
 
 ### Objetivos del Refactor
 
-| Objetivo | Estado |
-|----------|--------|
-| Integrar login con Google OAuth | ✅ |
-| Migrar de Axios a fetch nativo | ✅ |
-| Unificar cliente HTTP (server + cliente) | ✅ |
-| Centralizar tipos de autenticación | ✅ |
-| Reducir bundle size | ✅ (~13KB menos) |
-| Mejorar compatibilidad con Next.js App Router | ✅ |
+| Objetivo                                      | Estado           |
+| --------------------------------------------- | ---------------- |
+| Integrar login con Google OAuth               | ✅               |
+| Migrar de Axios a fetch nativo                | ✅               |
+| Unificar cliente HTTP (server + cliente)      | ✅               |
+| Centralizar tipos de autenticación            | ✅               |
+| Reducir bundle size                           | ✅ (~13KB menos) |
+| Mejorar compatibilidad con Next.js App Router | ✅               |
 
 ### Cambios de Alto Nivel
 
@@ -56,8 +56,9 @@ Puerto 3000 (conflicto)      →    Puerto 3001 (frontend)
 
 ### Archivo Creado: `src/lib/api/http.ts`
 
-**Justificación:**  
+**Justificación:**
 Next.js App Router tiene integración nativa con `fetch` que permite:
+
 - Control de caché con `cache: 'force-cache'` / `'no-store'`
 - Revalidación incremental con `next: { revalidate: 60 }`
 - Tags para invalidación granular con `next: { tags: ['user'] }`
@@ -76,10 +77,10 @@ http.delete<T>(path, options?)
 
 **Comportamiento isomorfo:**
 
-| Contexto | Comportamiento |
-|----------|----------------|
-| **Server** (RSC, Route Handlers) | Importa `cookies()` de `next/headers` y reenvía el header `Cookie` al backend |
-| **Cliente** (hooks, event handlers) | Usa `credentials: 'include'` para enviar cookies httpOnly |
+| Contexto                            | Comportamiento                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------------- |
+| **Server** (RSC, Route Handlers)    | Importa `cookies()` de `next/headers` y reenvía el header `Cookie` al backend |
+| **Cliente** (hooks, event handlers) | Usa `credentials: 'include'` para enviar cookies httpOnly                     |
 
 **Manejo de errores:**
 
@@ -101,8 +102,9 @@ export class ApiError extends Error {
 
 ### Archivo Creado: `src/lib/services/auth.ts`
 
-**Justificación:**  
+**Justificación:**
 Centralizar todas las operaciones de autenticación en un único servicio que:
+
 - Funciona igual en server y cliente
 - Implementa caché local para evitar llamadas redundantes a `/api/auth/me`
 - Maneja backoff automático en caso de rate limiting (429)
@@ -110,25 +112,26 @@ Centralizar todas las operaciones de autenticación en un único servicio que:
 **Métodos disponibles:**
 
 ```typescript
-authService.getMe()          // Obtiene usuario actual
-authService.login(dto)       // Login con email/password
-authService.register(dto)    // Registro de nuevo usuario
-authService.logout()         // Cierra sesión
-authService.changePassword() // Cambia contraseña
+authService.getMe(); // Obtiene usuario actual
+authService.login(dto); // Login con email/password
+authService.register(dto); // Registro de nuevo usuario
+authService.logout(); // Cierra sesión
+authService.changePassword(); // Cambia contraseña
 ```
 
 **Sistema de caché implementado:**
 
 ```typescript
-const ME_CACHE_TTL_MS = 10_000;     // Caché de 10 segundos
-const ME_429_BACKOFF_MS = 5_000;    // Backoff de 5 segundos en 429
+const ME_CACHE_TTL_MS = 10_000; // Caché de 10 segundos
+const ME_429_BACKOFF_MS = 5_000; // Backoff de 5 segundos en 429
 
-let meInFlight: Promise<User> | null = null;  // Deduplicación de requests
+let meInFlight: Promise<User> | null = null; // Deduplicación de requests
 let meCache: { user: User; expiresAt: number } | null = null;
 let meBackoffUntil = 0;
 ```
 
 **Beneficios:**
+
 - Evita múltiples llamadas simultáneas a `/api/auth/me`
 - Cachea el resultado por 10 segundos
 - Respeta rate limiting del backend
@@ -139,7 +142,7 @@ let meBackoffUntil = 0;
 
 ### Archivo Creado: `src/types/auth.ts`
 
-**Justificación:**  
+**Justificación:**
 Los tipos estaban dispersos en `lib/api/types.ts` y acoplados a la implementación de Axios. Se centralizaron en la carpeta estándar `types/`.
 
 **Tipos definidos:**
@@ -167,9 +170,17 @@ interface AuthState {
 }
 
 // DTOs para endpoints
-interface LoginDto { email: string; password: string; }
-interface RegisterDto extends LoginDto { fullName: string; username: string; }
-interface AuthResponse { user: User; }
+interface LoginDto {
+  email: string;
+  password: string;
+}
+interface RegisterDto extends LoginDto {
+  fullName: string;
+  username: string;
+}
+interface AuthResponse {
+  user: User;
+}
 ```
 
 ---
@@ -178,7 +189,7 @@ interface AuthResponse { user: User; }
 
 ### Archivo Creado: `src/components/shared/GoogleSignInButton.tsx`
 
-**Justificación:**  
+**Justificación:**
 El botón de Google estaba duplicado inline en `/login` y `/register` con SVG hardcodeado. Se extrajo a un componente reutilizable.
 
 **Implementación:**
@@ -193,7 +204,7 @@ export function GoogleSignInButton({ className, label = 'Google' }: Props) {
 
   return (
     <Button variant="outline" onClick={handleClick} className={className}>
-      <svg>...</svg>  {/* Logo de Google con colores oficiales */}
+      <svg>...</svg> {/* Logo de Google con colores oficiales */}
       {label}
     </Button>
   );
@@ -201,6 +212,7 @@ export function GoogleSignInButton({ className, label = 'Google' }: Props) {
 ```
 
 **Características:**
+
 - Usa `Button` de shadcn/ui
 - SVG con colores oficiales de Google (#EA4335, #34A853, #FBBC05, #4285F4)
 - Props para personalizar estilos y label
@@ -220,7 +232,7 @@ export function GoogleSignInButton({ className, label = 'Google' }: Props) {
 
 ### Archivo Creado: `src/hooks/use-auth.ts`
 
-**Justificación:**  
+**Justificación:**
 Hook ligero para componentes que necesitan acceso a autenticación sin depender del `AuthProvider` completo.
 
 **API del hook:**
@@ -230,6 +242,7 @@ const { user, isLoading, isAuthenticated, logout } = useAuth();
 ```
 
 **Implementación:**
+
 - Llama a `authService.getMe()` al montar
 - Implementa cleanup con flag `cancelled` para evitar memory leaks
 - Función `logout()` con redirección a `/login`
@@ -237,6 +250,7 @@ const { user, isLoading, isAuthenticated, logout } = useAuth();
 ### Archivo Modificado: `src/components/auth/AuthProvider.tsx`
 
 **Cambios:**
+
 1. Migración de `authApi` → `authService`
 2. Tipo `UserResponse` → `User`
 3. Cleanup con flag `cancelled` en useEffect
@@ -254,7 +268,9 @@ useEffect(() => {
       if (!cancelled) setIsLoading(false);
     }
   })();
-  return () => { cancelled = true; };
+  return () => {
+    cancelled = true;
+  };
 }, []);
 ```
 
@@ -264,7 +280,7 @@ useEffect(() => {
 
 ### Archivo Creado: `src/app/auth/callback/page.tsx`
 
-**Justificación:**  
+**Justificación:**
 El flujo de Google OAuth requiere una página de callback donde el backend redirige después de autenticar. Esta página valida la sesión server-side.
 
 **Implementación:**
@@ -277,7 +293,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function AuthCallbackPage() {
   try {
-    await authService.getMe();  // Valida que las cookies son válidas
+    await authService.getMe(); // Valida que las cookies son válidas
   } catch {
     redirect('/login?error=oauth_failed');
   }
@@ -286,14 +302,16 @@ export default async function AuthCallbackPage() {
 ```
 
 **Puntos clave:**
+
 - Es un **Server Component** (sin `"use client"`)
 - `dynamic = 'force-dynamic'` evita caching estático
 - Valida sesión llamando a `/api/auth/me` con las cookies del request
 
 ### Archivo Creado: `src/app/api/auth/logout/route.ts`
 
-**Justificación:**  
+**Justificación:**
 Route Handler que actúa como proxy seguro para logout. Permite:
+
 1. Leer el `refresh_token` de las cookies (httpOnly, no accesible desde JS)
 2. Enviarlo al backend para invalidar la sesión
 3. Limpiar las cookies en la respuesta
@@ -338,7 +356,7 @@ export async function POST() {
 
 ### Archivo Modificado: `src/middleware.ts`
 
-**Justificación:**  
+**Justificación:**
 El middleware anterior era complejo y manejaba lógica que pertenece al cliente. Se simplificó a una única responsabilidad.
 
 **Antes:**
@@ -370,6 +388,7 @@ export const config = {
 ```
 
 **Beneficios:**
+
 - Una sola responsabilidad: proteger `/dashboard/*`
 - Verifica solo la existencia de `access_token`
 - La redirección de rutas auth la maneja el cliente (UX más fluida)
@@ -396,6 +415,7 @@ export const config = {
 ```
 
 **Justificación del puerto:**
+
 - Backend NestJS: `http://localhost:3000`
 - Frontend Next.js: `http://localhost:3001`
 - Evita conflictos de puertos durante desarrollo
@@ -415,24 +435,26 @@ export const config = {
 - },
 ```
 
-**Justificación:**  
+**Justificación:**
 Ya no es necesario el proxy. El cliente HTTP llama directamente al backend con `NEXT_PUBLIC_API_URL`.
 
 ---
 
 ## 10. Archivos Eliminados
 
-| Archivo | Razón de eliminación |
-|---------|---------------------|
-| `src/lib/api/auth.ts` | Reemplazado por `lib/services/auth.ts` |
-| `src/lib/api/client.ts` | Reemplazado por `lib/api/http.ts` |
+| Archivo                 | Razón de eliminación                     |
+| ----------------------- | ---------------------------------------- |
+| `src/lib/api/auth.ts`   | Reemplazado por `lib/services/auth.ts`   |
+| `src/lib/api/client.ts` | Reemplazado por `lib/api/http.ts`        |
 | `src/lib/api/config.ts` | URL ahora viene de `NEXT_PUBLIC_API_URL` |
-| `src/lib/api/types.ts` | Movido a `types/auth.ts` |
+| `src/lib/api/types.ts`  | Movido a `types/auth.ts`                 |
 
 **Dependencias removidas de `package.json`:**
+
 - `axios` (y sus 11 subdependencias transitivas)
 
 **Impacto en bundle:**
+
 - ~13KB menos en el bundle del cliente
 - Eliminación de: `agent-base`, `asynckit`, `combined-stream`, `delayed-stream`, `follow-redirects`, `form-data`, `https-proxy-agent`, `mime-db`, `mime-types`, `proxy-from-env`
 
@@ -512,6 +534,7 @@ app.enableCors({
 ### Configuración de Cookies
 
 Las cookies del backend deben emitirse con:
+
 - `httpOnly: true`
 - `sameSite: 'lax'`
 - `secure: false` (local) / `true` (producción)
