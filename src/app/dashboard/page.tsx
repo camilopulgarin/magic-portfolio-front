@@ -1,7 +1,29 @@
+'use client';
+
+import { useAuth } from "@/components/auth/AuthProvider";
+import { useRouter } from "next/navigation";
+import { useEffect, Suspense } from "react";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { RecentPortfolios } from "@/components/dashboard/RecentPortfolios";
 
-export default function DashboardPage() {
+function DashboardContent() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Cargando...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return null; // El useEffect se encargará de la redirección
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -13,5 +35,13 @@ export default function DashboardPage() {
 
       <RecentPortfolios />
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen">Cargando...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }

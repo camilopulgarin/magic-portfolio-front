@@ -1,31 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-  const refreshToken = request.cookies.get("refreshToken")?.value;
+const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+export async function POST() {
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get('refresh_token')?.value;
+  const cookieHeader = cookieStore.toString();
 
   if (refreshToken) {
-    try {
-      await fetch(`${apiUrl}/api/auth/logout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refreshToken }),
-      });
-    } catch {
-    }
+    await fetch(`${API_URL}/api/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(cookieHeader ? { cookie: cookieHeader } : {}),
+      },
+      body: JSON.stringify({ refreshToken }),
+      cache: 'no-store',
+    });
   }
 
-  const response = NextResponse.json({ success: true });
-  
-  response.cookies.set("accessToken", "", { maxAge: 0, path: "/" });
-  response.cookies.set("refreshToken", "", { maxAge: 0, path: "/" });
+  const response = new NextResponse(null, { status: 204 });
+  response.cookies.delete('access_token');
+  response.cookies.delete('refresh_token');
 
   return response;
-}
-
-export async function GET(request: NextRequest) {
-  return POST(request);
 }

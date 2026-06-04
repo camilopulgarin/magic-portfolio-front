@@ -1,17 +1,13 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  async rewrites() {
-    return [
+  images: {
+    remotePatterns: [
       {
-        source: "/api/:path*",
-        destination: "http://localhost:4000/api/:path*",
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
       },
-      {
-        source: "/auth/:path*",
-        destination: "http://localhost:4000/api/auth/:path*",
-      },
-    ];
+    ],
   },
 };
 

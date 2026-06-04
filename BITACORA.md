@@ -151,3 +151,131 @@ Se migro el almacenamiento de tokens de localStorage a cookies httpOnly para may
 |--------|------|----------|
 | `accessToken` | httpOnly, secure, sameSite=lax | 15 minutos |
 | `refreshToken` | httpOnly, secure, sameSite=lax | 7 días |
+
+---
+
+## Actualización: Refactor de API y configuración centralizada
+
+**Fecha:** 2026-05-23
+
+### Objetivo
+Centralizar la configuración de la API y mejorar la arquitectura del cliente HTTP para mayor mantenibilidad y escalabilidad.
+
+### Cambios realizados
+
+#### 1. Configuración centralizada (`src/lib/api/config.ts`)
+- **Archivo nuevo:** `src/lib/api/config.ts`
+- **Función:** Exportar constantes de configuración como `CLIENT_API_URL`
+- **Ventaja:** Evita duplicación de URLs y facilita cambios de entorno
+
+#### 2. Refactor del cliente API (`src/lib/api/client.ts`)
+- **Cambios principales:**
+  - Reemplaza `API_URL` con `CLIENT_API_URL` desde config
+  - Simplifica manejo de tokens (localStorage + cookies)
+  - Mejora manejo de errores en interceptores
+  - Corrige formato de cookies y localStorage
+  - Actualiza URLs de endpoints para usar rutas absolutas
+
+#### 3. Adaptación de API de autenticación (`src/lib/api/auth.ts`)
+- **Cambios:**
+  - Usa rutas absolutas (`/api/auth/*`) en lugar de relativas
+  - Implementa logout usando route handler de Next.js
+  - Mantiene compatibilidad con flujo existente
+  - Corrige sintaxis de importaciones
+
+#### 4. Mejoras en Next.js config (`next.config.ts`)
+- **Cambios:**
+  - Agrega configuración de imágenes para Google OAuth
+  - Actualiza formato de rewrites y remapeos
+  - Mejora configuración de proxy para auth routes
+
+#### 5. Optimización de componentes de dashboard
+- **Archivos afectados:**
+  - `src/components/dashboard/DashboardTopBar.tsx`
+  - `src/components/dashboard/Sidebar.tsx`
+  - **Cambios:** Refactor de imports y mejor estructura de componentes
+
+#### 6. Actualización de AuthProvider (`src/components/auth/AuthProvider.tsx`)
+- **Mejoras:** 
+  - Optimiza manejo de estado de autenticación
+  - Mejora manejo de errores y redirecciones
+  - Actualiza lógica de refresh token
+
+### Problemas resueltos
+
+#### Problema 1: URLs duplicadas y inconsistentes
+**Síntoma:** Diferentes partes del código usaban diferentes formatos de URLs
+**Solución:** Centralización en `config.ts`
+
+#### Problema 2: Manejo confuso de tokens
+**Síntoma:** Tokens almacenados en múltiples lugares con formatos inconsistentes
+**Solución:** Unificación de manejo en `client.ts`
+
+#### Problema 3: Configuración de imágenes para OAuth
+**Síntoma:** Errores al cargar imágenes de Google OAuth
+**Solución:** Configuración de `remotePatterns` en `next.config.ts`
+
+### Estado actual
+La API está refactorizada con arquitectura más limpia y mantenible. El flujo de autenticación sigue funcionando pero con mejor manejo de errores y configuración centralizada.
+
+---
+
+## Actualización: Corrección de OAuth Google Callback (404 Not Found)
+
+**Fecha:** 2026-06-01
+
+### Objetivo
+Resolver el error 404 "Not Found" en el flujo de callback de Google OAuth, asegurando que Google redirija correctamente al backend a través de Next.js rewrites, y que el backend finalice el flujo correctamente con cookies httpOnly y redirección al dashboard del frontend.
+
+### Problema Presentado
+Google estaba redirigiendo el navegador a `http://localhost:3000/auth/callback` después de la selección de cuenta, lo cual resultaba en un error 404 (Not Found) en el frontend. La URL correcta esperada por el backend (a través de Next.js rewrites) era `http://localhost:3000/api/auth/google/callback`.
+
+### Causa Exacta
+1.  **Google Cloud Console OAuth Redirect URI incorrecta:** La URL configurada en Google Cloud Console (`http://localhost:3000/auth/callback`) no coincidía con la ruta del backend (`http://localhost:3000/api/auth/google/callback`) que debía manejar el callback.
+2.  **Configuración `callbackURL` en el Backend incorrecta:** Es probable que la `callbackURL` definida en la estrategia de Google de Passport.js (o equivalente) en el backend también estuviera apuntando a la URL incorrecta.
+
+### Solución Implementada (Acciones Manuales Requeridas)
+
+1.  **Google Cloud Console:**
+    *   **Acción:** Actualizar las "URIs de redireccionamiento autorizados" en la configuración de la credencial OAuth 2.0.
+    *   **URL Correcta (Desarrollo):** `http://localhost:3000/api/auth/google/callback`
+    *   **URL Correcta (Producción):** `https://[tu-dominio-de-produccion].com/api/auth/google/callback`
+    *   **Eliminar:** Cualquier URI incorrecta, como `http://localhost:3000/auth/callback`.
+
+2.  **Código del Backend (Archivo de Configuración de Google Strategy):**
+    *   **Acción:** Modificar la `callbackURL` en la configuración de la estrategia de Google OAuth (ej. Passport.js).
+    *   **Código Anterior (Ejemplo):** `callbackURL: 'http://localhost:3000/auth/callback'`
+    *   **Código Corregido (Ejemplo):** `callbackURL: 'http://localhost:3000/api/auth/google/callback'`
+        *(Para producción, reemplazar por `https://[tu-dominio-de-produccion].com/api/auth/google/callback`)*
+
+3.  **Código del Backend (Redirección Post-Login):**
+    *   **Acción:** Asegurar que el endpoint del backend que maneja el callback de Google redirija al usuario a la ruta del dashboard del frontend después de la autenticación exitosa.
+    *   **URL de Redirección Correcta (Desarrollo):** `http://localhost:3000/dashboard`
+    *   **URL de Redirección Correcta (Producción):** `https://[tu-dominio-de-produccion].com/dashboard`
+
+### Archivos de Frontend (magicportfolio-frontend) Modificados
+*   **Ninguno.** La solución se centró en configuraciones externas (Google Cloud Console) y en el código del backend, respetando la arquitectura backend-driven del proyecto Next.js.
+
+### Aspectos NO Tocados en el Frontend (magicportfolio-frontend)
+*   `next.config.ts` (los rewrites existentes son correctos para el flujo).
+*   `src/lib/api/config.ts`.
+*   `axios` configuración `withCredentials: true`.
+*   Botón de Google (`window.location.href = '/api/auth/google';`).
+*   No se crearon nuevas API Routes de autenticación en Next.js.
+*   No se introdujo lógica de tokens o refresh en el frontend.
+*   No se utilizaron `fetch`, `localStorage`, `sessionStorage` o `Authorization headers` manuales para el flujo de autenticación.
+*   No se modificaron `src/app/(auth)/login/page.tsx`, `src/components/auth/AuthProvider.tsx`, `src/lib/schemas/auth.ts`, `src/lib/api/auth.ts`, `src/lib/api/client.ts`.
+
+### Flujo OAuth Profesional Backend-Driven Correcto
+1.  Usuario hace clic en el botón de Google en el frontend.
+2.  El frontend redirige el navegador a `http://localhost:3000/api/auth/google`.
+3.  Next.js reescribe (`rewrite`) la solicitud internamente a `http://localhost:4000/api/auth/google`.
+4.  El backend inicia el flujo de autenticación de Google, **especificando `http://localhost:3000/api/auth/google/callback` como `redirect_uri` a Google.**
+5.  Google presenta al usuario el selector de cuentas.
+6.  El usuario selecciona su cuenta.
+7.  Google redirige el navegador del usuario a `http://localhost:3000/api/auth/google/callback`.
+8.  Next.js reescribe (`rewrite`) esta solicitud internamente a `http://localhost:4000/api/auth/google/callback`.
+9.  El backend procesa la respuesta de Google, autentica al usuario, establece las cookies `httpOnly`, y redirige el navegador a `http://localhost:3000/dashboard`.
+10. El `AuthProvider` del frontend detecta las cookies y carga la información del usuario mediante `authApi.getMe()`.
+
+---
