@@ -1,12 +1,12 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authApi } from '@/lib/api/auth';
-import type { UserResponse } from '@/lib/api/types';
-import { success, error } from '@/hooks/use-toast';
+import { authService } from '@/lib/services/auth';
+import type { User } from '@/types/auth';
+import { success } from '@/hooks/use-toast';
 
 interface AuthContextType {
-  user: UserResponse | null;
+  user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -17,41 +17,41 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserResponse | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const initAuth = async () => {
+    let cancelled = false;
+    (async () => {
       try {
-        const userData = await authApi.getMe();
-        setUser(userData);
-      } catch (error) {
-        // Un 401 Unauthorized significa que no hay una sesión válida.
-        // Esto es esperado para usuarios anónimos o si las cookies no están presentes/son inválidas.
-        // Simplemente establecemos el usuario como null.
-        setUser(null);
+        const me = await authService.getMe();
+        if (!cancelled) setUser(me);
+      } catch {
+        // 401 esperado para usuarios anónimos
+        if (!cancelled) setUser(null);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-
-    initAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
-    const result = await authApi.login({ email, password });
+    const result = await authService.login({ email, password });
     setUser(result.user);
     success(`Bienvenido, ${result.user.fullName}!`);
   };
 
   const register = async (email: string, password: string, fullName: string, username: string) => {
-    const result = await authApi.register({ email, password, fullName, username });
+    const result = await authService.register({ email, password, fullName, username });
     setUser(result.user);
     success(`Cuenta creada para ${result.user.fullName}!`);
   };
 
   const logout = async () => {
-    await authApi.logout();
+    await authService.logout();
     setUser(null);
     success('Sesión cerrada correctamente');
   };
