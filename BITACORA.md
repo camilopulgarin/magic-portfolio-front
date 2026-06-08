@@ -279,3 +279,93 @@ Google estaba redirigiendo el navegador a `http://localhost:3000/auth/callback` 
 10. El `AuthProvider` del frontend detecta las cookies y carga la información del usuario mediante `authApi.getMe()`.
 
 ---
+
+## Actualización: Flujo de Recuperación de Contraseña
+
+**Fecha:** 2026-06-07
+
+### Objetivo
+Implementar el flujo completo de recuperación de contraseña: solicitud de enlace por email y restablecimiento de contraseña mediante token.
+
+### Diseño de referencia
+Se utilizó un diseño de Stitch como referencia visual para ambas páginas (forgot-password y reset-password), manteniendo consistencia con el design system existente (glassmorphism, colores secondary, paleta del proyecto).
+
+### Archivos creados
+
+#### 1. `src/app/(auth)/forgot-password/page.tsx`
+- **Tipo:** Página client-side (`'use client'`)
+- **Función:** Formulario para solicitar enlace de recuperación de contraseña
+- **Estados:**
+  - **Formulario:** Icono de candado → título "Recuperar contraseña" → subtítulo → campo email con icono de sobre → botón lavanda → link volver
+  - **Loading:** Botón deshabilitado con texto "Enviando..."
+  - **Éxito:** Icono de envío → "¡Correo enviado!" → mensaje con email → link "Intentar de nuevo"
+- **Validación:** `react-hook-form` + `zodResolver` con `forgotPasswordSchema`
+- **API:** `POST /api/auth/forgot-password` via `authService.forgotPassword()`
+- **Estilo:** Card glassmorphism (`bg-white/5 backdrop-blur-xl border-white/10 rounded-2xl`), botón `bg-secondary`, labels uppercase con tracking-wider
+
+#### 2. `src/app/(auth)/reset-password/page.tsx`
+- **Tipo:** Página client-side (`'use client'`)
+- **Función:** Formulario para restablecer contraseña con token de recuperación
+- **Token:** Se lee de URL search params (`?token=xxx`) via `useSearchParams()`
+- **Estados:**
+  - **Token inválido:** Muestra error con link a "Solicitar nuevo enlace" en `/forgot-password`
+  - **Formulario:** Icono de candado → título "Nueva contraseña" → campo nueva contraseña + confirmar contraseña (ambos con icono de candado) → botón lavanda
+  - **Loading:** Botón deshabilitado con texto "Restableciendo..."
+  - **Éxito:** Icono check → "¡Contraseña restablecida!" → mensaje de confirmación → link a login
+- **Validación:** `react-hook-form` + `zodResolver` con `resetPasswordSchema` (incluye `.refine()` para verificar que las contraseñas coincidan)
+- **API:** `POST /api/auth/reset-password` via `authService.resetPassword()`
+- **Misma identidad visual** que forgot-password
+
+### Archivos modificados
+
+#### 3. `src/lib/schemas/auth.ts`
+- **Cambio:** Agregados `forgotPasswordSchema` y `resetPasswordSchema`
+- **forgotPasswordSchema:** Valida que el email sea requerido y tenga formato válido
+- **resetPasswordSchema:** Valida password (8-72 chars, mayúscula + minúscula + número) y confirmPassword con `.refine()` para coincidencia
+- **Tipos exportados:** `ForgotPasswordFormData`, `ResetPasswordFormData`
+
+#### 4. `src/types/auth.ts`
+- **Cambio:** Agregadas interfaces `ForgotPasswordDto` y `ResetPasswordDto`
+- **ForgotPasswordDto:** `{ email: string }`
+- **ResetPasswordDto:** `{ token: string; password: string }`
+
+#### 5. `src/lib/services/auth.ts`
+- **Cambio:** Agregados métodos `forgotPassword()` y `resetPassword()`
+- **forgotPassword:** `POST /api/auth/forgot-password` con `ForgotPasswordDto`
+- **resetPassword:** `POST /api/auth/reset-password` con `ResetPasswordDto`
+- **Import:** Se agregó `ResetPasswordDto` al import de tipos
+
+### Flujo completo de recuperación
+
+```
+Login → "¿Olvidaste tu contraseña?" → /forgot-password
+    → Ingresa email → POST /api/auth/forgot-password
+    → Muestra "¡Correo enviado!"
+
+Email → Click en enlace → /reset-password?token=xxx
+    → Ingresa nueva contraseña + confirmación
+    → POST /api/auth/reset-password
+    → Muestra "¡Contraseña restablecida!"
+    → Click "Volver al inicio de sesión" → /login
+```
+
+### Endpoints utilizados
+
+| Endpoint | Método | Body | Respuesta |
+|----------|--------|------|-----------|
+| `/api/auth/forgot-password` | POST | `{ email }` | 200 OK |
+| `/api/auth/reset-password` | POST | `{ token, password }` | 200 OK |
+
+### Validación de contraseñas (reset-password)
+
+- Mínimo 8 caracteres, máximo 72
+- Al menos una mayúscula, una minúscula y un número
+- Confirmación de contraseña requerida (`.refine()` en Zod)
+
+### Verificación
+- TypeScript (`tsc --noEmit`): Sin errores
+- ESLint: Sin errores
+- Link existente en `/login` ya apunta a `/forgot-password` (funcional ahora)
+
+### Estado actual
+El flujo de recuperación de contraseña está completamente implementado en el frontend. Las páginas están listas para conectarse a los endpoints del backend. El auth layout existente envuelve ambas páginas con el fondo gradient y blur circles automáticamente.
