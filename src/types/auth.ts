@@ -39,5 +39,5 @@ export interface ForgotPasswordDto {
 
 export interface ResetPasswordDto {
   token: string;
-  password: string;
+  newPassword: string;
 }

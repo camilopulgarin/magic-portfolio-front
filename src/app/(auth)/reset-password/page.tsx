@@ -36,7 +36,7 @@ export default function ResetPasswordPage() {
     setIsLoading(true);
 
     try {
-      await authService.resetPassword({ token, password: data.password });
+      await authService.resetPassword({ token, newPassword: data.password });
       setIsPasswordReset(true);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al restablecer la contraseña';
