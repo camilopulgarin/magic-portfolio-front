@@ -369,3 +369,343 @@ Email → Click en enlace → /reset-password?token=xxx
 
 ### Estado actual
 El flujo de recuperación de contraseña está completamente implementado en el frontend. Las páginas están listas para conectarse a los endpoints del backend. El auth layout existente envuelve ambas páginas con el fondo gradient y blur circles automáticamente.
+
+---
+
+## Actualización: Página Principal de Portafolios (HU-005 - DYN-42)
+
+**Fecha:** 2026-07-07
+
+### Objetivo
+Implementar la página "Mis Portafolios" en el dashboard para que los usuarios puedan visualizar, gestionar y crear portafolios, siguiendo la arquitectura existente de settings.
+
+### Issue de referencia
+- **Linear:** DYN-42 - HU-005: Pagina principal de portafolios
+- **Proyecto:** Magic-Portfolio
+
+### Archivos creados
+
+#### 1. `src/lib/services/portfolio.ts`
+- **Tipo:** Servicio mock
+- **Función:** Simula llamadas a API con datos de prueba
+- **Métodos:**
+  - `getPortfolios()` - Retorna lista de portafolios mock ordenados por `updatedAt` descendente
+  - `deletePortfolio(id)` - Simula eliminación de portafolio
+- **Nota:** Servicio temporalmente mock hasta que el backend implemente los endpoints reales
+
+#### 2. `src/components/dashboard/EmptyPortfoliosState.tsx`
+- **Tipo:** Componente de estado vacío
+- **Función:** Muestra mensaje y botón cuando el usuario no tiene portafolios
+- **Elementos:**
+  - Icono de briefcase con fondo `bg-primary/10`
+  - Título "No tienes portafolios aún"
+  - Descripción orientativa
+  - Botón "Crear mi primer portafolio" con gradiente `from-primary to-secondary`
+
+#### 3. `src/components/dashboard/PortfoliosTable.tsx`
+- **Tipo:** Componente de tabla reutilizable
+- **Función:** Muestra la lista de portafolios con acciones disponibles
+- **Columnas:**
+  - **Nombre** (link al portafolio)
+  - **Plantilla** (Creativo / Formal)
+  - **Estado** (Publicado / Borrador con badge de color)
+  - **Creado** (formato DD/MM/YYYY)
+  - **Actualizado** (formato DD/MM/YYYY)
+  - **Acciones** (dropdown contextual)
+- **Acciones disponibles:**
+  - Ver → `/dashboard/portfolios/:id`
+  - Editar → `/dashboard/portfolios/:id/edit`
+  - Copiar URL → copia al portapapeles
+  - Eliminar → con confirmación
+- **Características:**
+  - Ordenamiento por defecto: más reciente primero
+  - Loading state durante eliminación
+  - Feedback visual con toasts (success/error)
+
+#### 4. `src/app/dashboard/portfolios/page.tsx`
+- **Tipo:** Página principal del módulo
+- **Función:** Página de entrada para gestionar portafolios
+- **Estructura:**
+  - Header: Título "Mis Portafolios" + descripción
+  - Botón "Crear Portafolio" siempre visible
+  - PortfoliosTable (cuando hay datos)
+  - EmptyPortfoliosState (cuando no hay datos)
+- **Protección:** Redirige a `/login` si no está autenticado
+- **Loading:** Muestra spinner mientras carga datos
+
+### Archivos modificados
+
+#### 5. `src/types/portfolio.ts`
+- **Cambio:** Agregadas interfaces `Portfolio` y `PortfolioListResponse`
+- **Portfolio:**
+  ```typescript
+  interface Portfolio {
+    id: string;
+    name: string;
+    template: 'creative' | 'formal';
+    status: 'published' | 'draft';
+    createdAt: string;
+    updatedAt: string;
+    publicUrl?: string;
+  }
+  ```
+- **PortfolioListResponse:**
+  ```typescript
+  interface PortfolioListResponse {
+    data: Portfolio[];
+    total: number;
+  }
+  ```
+
+### Mock data utilizado
+
+```typescript
+const mockPortfolios = [
+  {
+    id: '1',
+    name: 'Mi Portafolio Creativo',
+    template: 'creative',
+    status: 'published',
+    createdAt: '2026-07-01T10:00:00Z',
+    updatedAt: '2026-07-07T14:30:00Z',
+    publicUrl: '/portfolio/mi-portafolio-creativo',
+  },
+  {
+    id: '2',
+    name: 'CV Profesional',
+    template: 'formal',
+    status: 'published',
+    createdAt: '2026-06-15T08:00:00Z',
+    updatedAt: '2026-07-05T09:15:00Z',
+    publicUrl: '/portfolio/cv-profesional',
+  },
+  {
+    id: '3',
+    name: 'Portafolio Draft',
+    template: 'creative',
+    status: 'draft',
+    createdAt: '2026-07-07T16:00:00Z',
+    updatedAt: '2026-07-07T16:00:00Z',
+  },
+];
+```
+
+### Plantillas disponibles
+- **Creativo** (`creative`) - Efectos glassmorphism, referencia: `src/app/demo/creative/page.tsx`
+- **Formal** (`formal`) - Académico/profesional, referencia: `src/app/demo/formal/page.tsx`
+
+### Criterios de aceptación cubiertos
+
+| CA | Descripción | Estado |
+|----|-------------|--------|
+| CA-001 | Visualización del listado | ✅ Tabla con todos los portafolios |
+| CA-002 | Información de la tabla | ✅ Nombre, creación, actualización, acciones |
+| CA-003 | Creación de nuevo portafolio | ✅ Botón redirige a HU-006 |
+| CA-004 | Usuario sin portafolios | ✅ Empty state con botón visible |
+
+### Reglas de negocio implementadas
+- Solo muestra portafolios del usuario actual (mock data)
+- Tabla ordenada por defecto: más reciente primero
+- Fechas en formato DD/MM/YYYY
+- Botón "Crear portafolio" siempre visible
+- Navegación hacia HU-006 para crear nuevo portafolio
+
+### Arquitectura utilizada
+- **Patrón:** Similar a `settings/page.tsx`
+- **Componentes shadcn:** Button
+- **Variables CSS:** Design system (bg-card, text-foreground, bg-primary, etc.)
+- **Responsive:** Mobile-first con breakpoints `lg:`
+- **Feedback:** Toast notifications con `use-toast`
+
+### Verificación
+- ✅ ESLint: Sin errores nuevos
+- ✅ Sigue patrón de `settings/page.tsx`
+- ✅ Usa componentes existentes del proyecto
+- ✅ Responsive design
+
+### Ruta de acceso
+- **URL:** `/dashboard/portfolios`
+- **Sidebar:** Botón "Mis Portafolios" en `src/components/dashboard/Sidebar.tsx`
+
+### Notas para futuras iteraciones
+1. Conectar a endpoints reales del backend cuando estén disponibles
+2. Implementar HU-006 (crear portafolio) en `/dashboard/portfolios/new`
+3. Implementar detalle de portafolio en `/dashboard/portfolios/:id`
+4. Implementar edición de portafolio en `/dashboard/portfolios/:id/edit`
+5. Agregar confirmación de eliminación con modal
+
+### Estado actual
+La página "Mis Portafolios" está completamente implementada con datos mock. Está lista para conectarse a los endpoints del backend. La navegación desde el sidebar funciona correctamente. El diseño es consistente con el design system del proyecto.
+
+---
+
+## Actualización: Paginación para PortfoliosTable
+
+**Fecha:** 2026-07-07
+
+### Objetivo
+Implementar paginación reutilizable en la tabla de portafolios para soportar grandes volúmenes de datos y mejorar la experiencia de usuario.
+
+### Archivos creados
+
+#### 1. `src/components/ui/pagination.tsx`
+- **Tipo:** Componente UI reutilizable
+- **Función:** Paginación completa con navegación, selector de items por página y indicadores
+- **Props:**
+  ```typescript
+  interface PaginationProps {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+    pageSize?: number;
+    onPageSizeChange?: (size: number) => void;
+    totalItems?: number;
+    className?: string;
+  }
+  ```
+- **Características:**
+  - Botones Anterior/Siguiente con iconos Chevron
+  - Números de página con ellipsis automático para muchas páginas
+  - Indicador "Mostrando X-Y de Z portafolios"
+  - Selector de items por página (5, 10, 25)
+  - Accesibilidad: `aria-label`, `aria-current="page"`, keyboard navigation
+  - Responsive: layout vertical en mobile, horizontal en desktop
+  - States: disabled en botones extremos, active con `bg-primary`
+  - Transiciones: `transition-colors duration-200`
+
+### Archivos modificados
+
+#### 2. `src/types/portfolio.ts`
+- **Cambio:** Agregadas interfaces `PaginationMeta` y `PaginatedResponse`
+- **PaginationMeta:**
+  ```typescript
+  interface PaginationMeta {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  }
+  ```
+- **PaginatedResponse:**
+  ```typescript
+  interface PaginatedResponse<T> {
+    data: T[];
+    meta: PaginationMeta;
+  }
+  ```
+
+#### 3. `src/lib/services/portfolio.ts`
+- **Cambio:** Actualizado `getPortfolios()` para soportar parámetros de paginación
+- **Parámetros:** `page: number`, `pageSize: number`
+- **Respuesta:** `PaginatedResponse<Portfolio>` con metadata de paginación
+- **Mock data:** Expandido de 3 a 16 portafolios para probar paginación
+- **Ejemplo:** 16 items / 5 por página = 4 páginas
+
+#### 4. `src/components/dashboard/PortfoliosTable.tsx`
+- **Cambio:** Integrado componente Pagination
+- **Nuevas props:**
+  - `pagination: PaginationMeta` - Metadata de paginación
+  - `onPageChange: (page: number) => void` - Callback cambio de página
+  - `onPageSizeChange: (size: number) => void` - Callback cambio de tamaño
+- **Estructura:** Tabla + Pagination debajo
+
+#### 5. `src/app/dashboard/portfolios/page.tsx`
+- **Cambio:** Agregado estado de paginación y llamadas API con parámetros
+- **Estado:** `pagination: PaginationMeta` con page, pageSize, total, totalPages
+- **Funciones:**
+  - `fetchPortfolios(page, pageSize)` - Obtiene datos paginados
+  - `handlePageChange(page)` - Cambia de página
+  - `handlePageSizeChange(size)` - Cambia items por página (resetea a página 1)
+- **Flujo:** Al eliminar un portafolio, recarga la página actual
+
+### Datos mock expandidos
+
+```typescript
+// 16 portafolios de prueba (originalmente 3)
+const mockPortfolios = [
+  { id: '1', name: 'Mi Portafolio Creativo', template: 'creative', status: 'published', ... },
+  { id: '2', name: 'CV Profesional', template: 'formal', status: 'published', ... },
+  { id: '3', name: 'Portafolio Draft', template: 'creative', status: 'draft', ... },
+  { id: '4', name: 'Portfolio Designer', template: 'creative', status: 'published', ... },
+  // ... 12 portafolios más
+  { id: '16', name: 'Portfolio Startup', template: 'creative', status: 'published', ... },
+];
+```
+
+### Distribución por página (5 items)
+
+| Página | Items | Portafolios |
+|--------|-------|-------------|
+| 1 | 1-5 | Creativo, CV Profesional, Draft, Designer, Ingeniero |
+| 2 | 6-10 | Fotógrafo, Arquitecto, Marketing, UX, Emprendedor |
+| 3 | 11-15 | Científico, Freelancer, PM, Artista, DevOps |
+| 4 | 16 | Startup |
+
+### UI/UX implementado
+
+**Desktop:**
+```
+┌─────────────────────────────────────────────────────────┐
+│ [← Anterior] [1] [2] [3] [4] [Siguiente]              │
+│           Mostrando 1-5 de 16 portafolios              │
+│                 5 por página ▼                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Mobile:**
+```
+┌─────────────────────────────┐
+│ [←] [1/4] [→]              │
+│ Mostrando 1-5 de 16        │
+│ 5 por página ▼             │
+└─────────────────────────────┘
+```
+
+### Estilos (design system)
+
+- **Container:** `bg-card border border-border rounded-xl p-4`
+- **Botones:** `text-muted-foreground hover:bg-muted hover:text-foreground`
+- **Active:** `bg-primary text-primary-foreground`
+- **Disabled:** `text-muted-foreground/50 cursor-not-allowed`
+- **Ellipsis:** `text-muted-foreground`
+- **Transiciones:** `transition-colors duration-200`
+
+### Accesibilidad
+
+- `aria-label="Paginación"` en el nav
+- `aria-label="Página anterior"` / `aria-label="Página siguiente"`
+- `aria-current="page"` para página activa
+- `aria-label="Página X"` para cada número de página
+- Focus visible con `focus:outline-none focus:ring-1 focus:ring-ring`
+
+### Verificación
+- ✅ ESLint: Sin errores (solo warning intencional de dependencies)
+- ✅ Componente reutilizable para otras tablas
+- ✅ Responsive design (mobile-first)
+- ✅ Accesibilidad con aria-labels
+- ✅ Sigue design system del proyecto
+
+### Uso del componente Pagination
+
+```tsx
+import { Pagination } from '@/components/ui/pagination';
+
+<Pagination
+  currentPage={1}
+  totalPages={4}
+  onPageChange={(page) => console.log(page)}
+  pageSize={5}
+  onPageSizeChange={(size) => console.log(size)}
+  totalItems={16}
+/>
+```
+
+### Notas para futuras iteraciones
+1. Conectar a endpoints reales del backend con paginación server-side
+2. Agregar loading skeleton durante cambio de página
+3. Implementar infinite scroll como alternativa
+4. Agregar URL query params para paginación (opcional)
+5. Persistir preferencia de items por página en localStorage
+
+### Estado actual
+La paginación está completamente implementada y funcionando con datos mock. El componente `Pagination` es reutilizable y está listo para usar en otras tablas del proyecto. Cuando el backend esté listo, solo será necesario pasar los parámetros `page` y `pageSize` al endpoint real.
