@@ -709,3 +709,23 @@ import { Pagination } from '@/components/ui/pagination';
 
 ### Estado actual
 La paginación está completamente implementada y funcionando con datos mock. El componente `Pagination` es reutilizable y está listo para usar en otras tablas del proyecto. Cuando el backend esté listo, solo será necesario pasar los parámetros `page` y `pageSize` al endpoint real.
+
+---
+
+## Actualización: Componente DataTable Genérico Reutilizable
+
+**Fecha:** 2026-07-14
+
+### Objetivo
+Crear un componente de tabla genérico reutilizable que pueda usarse para cualquier entidad, reemplazando el `PortfoliosTable` hardcodeado.
+
+### Archivos creados
+- `src/types/table.ts` — Tipos genéricos (`ColumnDef<T>`, `RowAction<T>`, `BadgeConfig`, `DataTableProps<T>`)
+- `src/components/ui/data-table.tsx` — Componente `DataTable<T>` con columnas dinámicas, acciones por fila, paginación, badges, loading states y empty state
+
+### Archivos modificados
+- `src/components/dashboard/PortfoliosTable.tsx` — Reescrito como wrapper sobre `DataTable` (de 287 a ~180 líneas)
+
+### Verificación
+- TypeScript: Sin errores
+- La página `/dashboard/portfolios` funciona igual
