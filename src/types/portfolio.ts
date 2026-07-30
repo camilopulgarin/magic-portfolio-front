@@ -8,7 +8,7 @@ export interface Project {
 }
 
 export interface SocialLink {
-  platform: 'email' | 'github' | 'linkedin' | 'twitter' | 'website';
+  platform: "email" | "github" | "linkedin" | "twitter" | "website";
   url: string;
   label: string;
 }
@@ -26,16 +26,24 @@ export interface PortfolioData {
 export interface Portfolio {
   id: string;
   name: string;
-  template: 'creative' | 'formal';
-  status: 'published' | 'draft';
+  slug: string;
+  description: string | null;
+  isPublic: boolean;
   createdAt: string;
   updatedAt: string;
-  publicUrl?: string;
+  publicUrl: string | null;
 }
 
-export interface PortfolioListResponse {
-  data: Portfolio[];
-  total: number;
+export interface PortfolioListApiResponse {
+  success: boolean;
+  message: string;
+  data: {
+    items: Portfolio[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
 
 export interface PaginationMeta {

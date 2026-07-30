@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/components/auth/AuthProvider';
-import { Button } from '@/components/ui/button';
-import { PortfoliosTable } from '@/components/dashboard/PortfoliosTable';
-import { EmptyPortfoliosState } from '@/components/dashboard/EmptyPortfoliosState';
-import { portfolioService } from '@/lib/services/portfolio';
-import type { Portfolio, PaginationMeta } from '@/types/portfolio';
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { Button } from "@/components/ui/button";
+import { PortfoliosTable } from "@/components/dashboard/PortfoliosTable";
+import { EmptyPortfoliosState } from "@/components/dashboard/EmptyPortfoliosState";
+import { portfolioService } from "@/lib/services/portfolio";
+import { error as toastError } from "@/hooks/use-toast";
+import type { Portfolio, PaginationMeta } from "@/types/portfolio";
 
 function Plus(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -40,18 +41,22 @@ export default function PortfoliosPage() {
     totalPages: 0,
   });
 
-  const fetchPortfolios = useCallback(async (page: number, pageSize: number) => {
-    setIsLoading(true);
-    try {
-      const response = await portfolioService.getPortfolios(page, pageSize);
-      setPortfolios(response.data);
-      setPagination(response.meta);
-    } catch {
-      console.error('Error al cargar portafolios');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const fetchPortfolios = useCallback(
+    async (page: number, pageSize: number) => {
+      setIsLoading(true);
+      try {
+        const response = await portfolioService.getPortfolios(page, pageSize);
+        setPortfolios(response.data);
+        setPagination(response.meta);
+      } catch (err) {
+        console.error("Error al cargar portafolios:", err);
+        toastError("No se pudieron cargar los portafolios");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
 
   const handleDelete = async (id: string) => {
     await portfolioService.deletePortfolio(id);
@@ -67,42 +72,35 @@ export default function PortfoliosPage() {
   };
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.replace('/login');
-    }
-  }, [isAuthenticated, authLoading, router]);
+    if (authLoading) return;
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      router.replace("/login");
+      return;
+    }
 
     let cancelled = false;
 
-    async function loadPortfolios() {
-      setIsLoading(true);
-      try {
-        const response = await portfolioService.getPortfolios(
-          pagination.page,
-          pagination.pageSize
-        );
+    portfolioService
+      .getPortfolios(1, 5)
+      .then((response) => {
         if (!cancelled) {
           setPortfolios(response.data);
           setPagination(response.meta);
         }
-      } catch {
-        console.error('Error al cargar portafolios');
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadPortfolios();
+      })
+      .catch((err) => {
+        console.error("Error al cargar portafolios:", err);
+        toastError("No se pudieron cargar los portafolios");
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
 
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, authLoading, router]);
 
   if (authLoading || isLoading) {
     return (
@@ -120,7 +118,9 @@ export default function PortfoliosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Mis Portafolios</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            Mis Portafolios
+          </h1>
           <p className="text-muted-foreground mt-1">
             Administra y organiza todos tus portafolios en un solo lugar.
           </p>
