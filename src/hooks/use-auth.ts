@@ -6,6 +6,7 @@ import { authService } from '@/lib/services/auth';
 import { error as toastError } from '@/hooks/use-toast';
 import type { User } from '@/types/auth';
 
+// Custom hook for handling authentication state and actions
 export function useAuth() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
