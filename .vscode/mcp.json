@@ -1,14 +1,12 @@
 {
 	"servers": {
-		"linear": {
-			"type": "stdio",
-			"command": "npx",
-			"args": ["mcp-remote", "https://mcp.linear.app/mcp"]
-		},
 		"stitch": {
 			"type": "stdio",
 			"command": "npx",
-			"args": ["-y", "@stitchmcp/stitch"]
+			"args": [
+				"-y",
+				"@stitchmcp/stitch"
+			]
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { ApiError, http } from '@/lib/api/http';
-import type { AuthResponse, LoginDto, RegisterDto, User } from '@/types/auth';
+import type { AuthResponse, ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto, User } from '@/types/auth';
 
 const ME_CACHE_TTL_MS = 10_000;
 const ME_429_BACKOFF_MS = 5_000;
@@ -88,4 +88,10 @@ export const authService = {
 
   changePassword: (currentPassword: string, newPassword: string) =>
     http.patch<void>('/api/auth/change-password', { currentPassword, newPassword }),
+
+  forgotPassword: (data: ForgotPasswordDto) =>
+    http.post<void>('/api/auth/forgot-password', data),
+
+  resetPassword: (data: ResetPasswordDto) =>
+    http.post<void>('/api/auth/reset-password', data),
 };

@@ -1,11 +1,13 @@
-const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"
+).replace(/\/$/, "");
 
 type NextFetchOptions = {
   revalidate?: number | false;
   tags?: string[];
 };
 
-type RequestOptions = Omit<RequestInit, 'body' | 'method'> & {
+type RequestOptions = Omit<RequestInit, "body" | "method"> & {
   body?: unknown;
   next?: NextFetchOptions;
 };
@@ -13,26 +15,30 @@ type RequestOptions = Omit<RequestInit, 'body' | 'method'> & {
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
-    message: string
+    message: string,
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
-async function request<T>(method: string, path: string, options: RequestOptions = {}): Promise<T> {
-  const isServer = typeof window === 'undefined';
+async function request<T>(
+  method: string,
+  path: string,
+  options: RequestOptions = {},
+): Promise<T> {
+  const isServer = typeof window === "undefined";
   const headers = new Headers(options.headers);
 
-  if (options.body !== undefined && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
+  if (options.body !== undefined && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
   }
 
   if (isServer) {
     try {
-      const { cookies } = await import('next/headers');
+      const { cookies } = await import("next/headers");
       const cookieHeader = (await cookies()).toString();
-      if (cookieHeader) headers.set('cookie', cookieHeader);
+      if (cookieHeader) headers.set("cookie", cookieHeader);
     } catch {
       // cookies() no disponible fuera de un request; seguir sin cookies.
     }
@@ -42,9 +48,9 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     method,
     headers,
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
-    cache: options.cache,
+    cache: isServer ? options.cache : "no-store",
     next: options.next,
-    credentials: isServer ? 'omit' : 'include',
+    credentials: isServer ? "omit" : "include",
     signal: options.signal,
   });
 
@@ -61,19 +67,21 @@ async function request<T>(method: string, path: string, options: RequestOptions 
 
   if (res.status === 204) return undefined as T;
 
-  const contentType = res.headers.get('content-type') ?? '';
-  if (!contentType.includes('application/json')) return undefined as T;
+  const contentType = res.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) return undefined as T;
 
   return (await res.json()) as T;
 }
 
 export const http = {
-  get: <T>(path: string, opts?: RequestOptions) => request<T>('GET', path, opts),
+  get: <T>(path: string, opts?: RequestOptions) =>
+    request<T>("GET", path, opts),
   post: <T>(path: string, body?: unknown, opts?: RequestOptions) =>
-    request<T>('POST', path, { ...opts, body }),
+    request<T>("POST", path, { ...opts, body }),
   patch: <T>(path: string, body?: unknown, opts?: RequestOptions) =>
-    request<T>('PATCH', path, { ...opts, body }),
+    request<T>("PATCH", path, { ...opts, body }),
   put: <T>(path: string, body?: unknown, opts?: RequestOptions) =>
-    request<T>('PUT', path, { ...opts, body }),
-  delete: <T>(path: string, opts?: RequestOptions) => request<T>('DELETE', path, opts),
+    request<T>("PUT", path, { ...opts, body }),
+  delete: <T>(path: string, opts?: RequestOptions) =>
+    request<T>("DELETE", path, opts),
 };
